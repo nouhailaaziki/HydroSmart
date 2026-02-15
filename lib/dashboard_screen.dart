@@ -101,11 +101,12 @@ class HydrosmartDashboard extends StatelessWidget {
     final waterData = Provider.of<WaterProvider>(context);
     return Row(
       children: [
+        // Inside _buildQuickStats
         Expanded(child: _statTile(
-            waterData.isLeakDetected ? "ALERT" : "Secure",
+            !waterData.leakDetectionEnabled ? "OFF" : (waterData.isLeakDetected ? "ALERT" : "Secure"),
             "Leak Status",
-            waterData.isLeakDetected ? Icons.warning : Icons.check_circle,
-            waterData.isLeakDetected ? Colors.redAccent : Colors.greenAccent
+            waterData.leakDetectionEnabled ? (waterData.isLeakDetected ? Icons.warning : Icons.check_circle) : Icons.do_not_disturb_on,
+            waterData.leakDetectionEnabled ? (waterData.isLeakDetected ? Colors.redAccent : Colors.greenAccent) : Colors.grey
         )),
         SizedBox(width: 15),
         Expanded(child: _statTile("2.1L", "Daily Avg", Icons.water_drop, Colors.blueAccent)),

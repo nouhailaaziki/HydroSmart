@@ -1,38 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:glassmorphism/glassmorphism.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'providers/water_provider.dart';
 
-class SettingsScreen extends StatefulWidget {
-  @override
-  _SettingsScreenState createState() => _SettingsScreenState();
-}
-
-class _SettingsScreenState extends State<SettingsScreen> {
-  double _currentGoal = 20.0;
-
+class SettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text("Preferences",
-                style: GoogleFonts.poppins(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 30),
-            _buildGoalSetter(),
-            const SizedBox(height: 20),
-            _buildToggleOption("Leak Detection", true),
-            _buildToggleOption("Smart Notifications", true),
-          ],
-        ),
+    final waterProvider = Provider.of<WaterProvider>(context);
+
+    return Padding(
+      padding: const EdgeInsets.all(20.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text("Preferences", style: GoogleFonts.poppins(fontSize: 24, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 30),
+          _buildGoalSetter(waterProvider),
+          const SizedBox(height: 20),
+          _buildToggleOption("Leak Detection", waterProvider.leakDetectionEnabled, waterProvider.toggleLeakDetection),
+          _buildToggleOption("Smart Notifications", waterProvider.notificationsEnabled, waterProvider.toggleNotifications),
+        ],
       ),
     );
   }
 
-  Widget _buildGoalSetter() {
+  Widget _buildGoalSetter(WaterProvider provider) {
     return GlassmorphicContainer(
       width: double.infinity,
       height: 150,
@@ -40,37 +33,40 @@ class _SettingsScreenState extends State<SettingsScreen> {
       blur: 20,
       alignment: Alignment.center,
       border: 2,
-      linearGradient: LinearGradient(colors: [Colors.white.withOpacity(0.1), Colors.white.withOpacity(0.05)]),
-      borderGradient: LinearGradient(colors: [Colors.white24, Colors.white10]),
+      linearGradient: LinearGradient(
+        colors: [
+          Colors.white.withOpacity(0.1),
+          Colors.white.withOpacity(0.05),
+        ],
+      ),
+      borderGradient: LinearGradient(
+        colors: [
+          Colors.white.withOpacity(0.2),
+          Colors.white.withOpacity(0.1),
+        ],
+      ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text("Weekly Water Goal", style: GoogleFonts.poppins(color: Colors.white70)),
-          Text("${_currentGoal.toInt()} Liters",
-              style: GoogleFonts.poppins(color: Colors.cyanAccent, fontSize: 28, fontWeight: FontWeight.bold)),
+          Text("Weekly Goal: ${provider.weeklyGoal.toInt()}L",
+              style: const TextStyle(fontSize: 20, color: Colors.white)),
           Slider(
-            value: _currentGoal,
+            value: provider.weeklyGoal,
             min: 5,
             max: 100,
             divisions: 19,
             activeColor: Colors.cyanAccent,
-            onChanged: (value) {
-              setState(() => _currentGoal = value);
-            },
+            onChanged: (val) => provider.updateGoal(val),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildToggleOption(String title, bool value) {
+  Widget _buildToggleOption(String title, bool val, Function(bool) onChanged) {
     return ListTile(
-      title: Text(title, style: GoogleFonts.poppins(color: Colors.white)),
-      trailing: Switch(
-        value: value,
-        activeColor: Colors.cyanAccent,
-        onChanged: (bool newValue) {},
-      ),
+      title: Text(title),
+      trailing: Switch(value: val, activeColor: Colors.cyanAccent, onChanged: onChanged),
     );
   }
 }

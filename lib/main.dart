@@ -8,6 +8,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'providers/auth_provider.dart';
 import 'providers/language_provider.dart';
 import 'screens/login_screen.dart';
+import 'screens/onboarding/onboarding_flow_screen.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'theme/app_theme.dart';
 
@@ -17,6 +18,10 @@ Future<void> main() async {
   await Hive.initFlutter();
   await Hive.openBox('chat_history');
   await Hive.openBox('settings');
+  await Hive.openBox('user');
+  await Hive.openBox('meter_readings');
+  await Hive.openBox('challenges');
+  await Hive.openBox('user_settings');
 
   try {
     await dotenv.load(fileName: ".env");
@@ -24,11 +29,17 @@ Future<void> main() async {
     debugPrint("Warning: .env file not found");
   }
 
+  final authProvider = AuthProvider();
+  final waterProvider = WaterProvider();
+
+  await authProvider.initialize();
+  await waterProvider.initialize();
+
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => WaterProvider()),
-        ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider.value(value: waterProvider),
+        ChangeNotifierProvider.value(value: authProvider),
         ChangeNotifierProvider(create: (_) => LanguageProvider()),
       ],
       child: const HydrosmartApp(),
@@ -41,15 +52,26 @@ class HydrosmartApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isAuthenticated = context.watch<AuthProvider>().isAuthenticated;
+    final authProvider = context.watch<AuthProvider>();
+    final isAuthenticated = authProvider.isAuthenticated;
+    final hasCompletedOnboarding = authProvider.hasCompletedOnboarding;
     final languageProvider = context.watch<LanguageProvider>();
+
+    Widget home;
+    if (!isAuthenticated) {
+      home = LoginScreen();
+    } else if (!hasCompletedOnboarding) {
+      home = const OnboardingFlowScreen();
+    } else {
+      home = const MainNavigationShell();
+    }
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Hydrosmart',
       theme: AppTheme.darkTheme,
       locale: languageProvider.currentLocale,
-      home: isAuthenticated ? const MainNavigationShell() : LoginScreen(),
+      home: home,
     );
   }
 }

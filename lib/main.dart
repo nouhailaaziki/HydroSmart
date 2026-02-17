@@ -9,6 +9,8 @@ import 'providers/auth_provider.dart';
 import 'providers/language_provider.dart';
 import 'screens/login_screen.dart';
 import 'screens/onboarding/onboarding_flow_screen.dart';
+import 'screens/daily_meter_input_screen.dart';
+import 'screens/welcome_back_screen.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'theme/app_theme.dart';
 
@@ -93,6 +95,41 @@ class _MainNavigationShellState extends State<MainNavigationShell> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    _checkForInactivity();
+  }
+
+  Future<void> _checkForInactivity() async {
+    // Give UI time to load
+    await Future.delayed(const Duration(milliseconds: 500));
+
+    if (!mounted) return;
+
+    final waterProvider = context.read<WaterProvider>();
+    final daysAway = waterProvider.getDaysSinceLastOpen();
+
+    if (daysAway > 1) {
+      // Show welcome back screen
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => WelcomeBackScreen(daysAway: daysAway),
+          fullscreenDialog: true,
+        ),
+      );
+    }
+  }
+
+  void _showMeterInput() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const DailyMeterInputScreen(),
+        fullscreenDialog: true,
+      ),
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
@@ -108,6 +145,18 @@ class _MainNavigationShellState extends State<MainNavigationShell> {
             children: _screens
         ),
       ),
+      floatingActionButton: _selectedIndex == 0
+          ? FloatingActionButton.extended(
+              onPressed: _showMeterInput,
+              backgroundColor: Colors.cyanAccent,
+              foregroundColor: Colors.black,
+              icon: const Icon(Icons.water_drop),
+              label: const Text(
+                'Log Reading',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+            )
+          : null,
       bottomNavigationBar: NavigationBar(
         height: 70,
         selectedIndex: _selectedIndex,

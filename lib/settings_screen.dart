@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'providers/water_provider.dart';
 import 'providers/auth_provider.dart';
+import 'providers/language_provider.dart';
 import 'screens/profile_screen.dart';
 import 'theme/app_colors.dart';
 import 'theme/app_text_styles.dart';
@@ -15,12 +16,12 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  String _selectedLanguage = 'English';
   bool _darkModeEnabled = true;
 
   @override
   Widget build(BuildContext context) {
     final waterProvider = Provider.of<WaterProvider>(context);
+    final languageProvider = Provider.of<LanguageProvider>(context);
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(20.0),
@@ -46,7 +47,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           // Language Selection
           _buildSectionHeader("Language"),
           const SizedBox(height: 12),
-          _buildLanguageSelector(),
+          _buildLanguageSelector(languageProvider),
           const SizedBox(height: 24),
           
           // Theme Mode
@@ -168,7 +169,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  Widget _buildLanguageSelector() {
+  Widget _buildLanguageSelector(LanguageProvider languageProvider) {
     return GlassmorphicContainer(
       width: double.infinity,
       height: 70,
@@ -192,21 +193,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
         leading: Icon(Icons.language, color: AppColors.primary),
         title: Text("Language", style: AppTextStyles.body),
         trailing: DropdownButton<String>(
-          value: _selectedLanguage,
+          value: languageProvider.currentLanguage,
           dropdownColor: AppColors.backgroundDark,
           style: AppTextStyles.body,
           underline: SizedBox(),
-          items: ['English', 'Arabic', 'French'].map((String value) {
-            return DropdownMenuItem<String>(
-              value: value,
-              child: Text(value),
-            );
-          }).toList(),
+          items: [
+            DropdownMenuItem(value: 'en', child: Text('English')),
+            DropdownMenuItem(value: 'ar', child: Text('العربية')),
+            DropdownMenuItem(value: 'fr', child: Text('Français')),
+          ],
           onChanged: (String? newValue) {
             if (newValue != null) {
-              setState(() {
-                _selectedLanguage = newValue;
-              });
+              languageProvider.setLanguage(newValue);
             }
           },
         ),

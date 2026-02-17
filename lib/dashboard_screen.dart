@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:provider/provider.dart';
 import 'providers/water_provider.dart';
+import 'providers/auth_provider.dart';
 
 class HydrosmartDashboard extends StatelessWidget {
   @override
@@ -15,7 +16,7 @@ class HydrosmartDashboard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildHeader(),
+            _buildHeader(context),
             SizedBox(height: 30),
             _buildMainGoalCard(context),
             SizedBox(height: 20),
@@ -28,14 +29,30 @@ class HydrosmartDashboard extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader() {
+  String _getGreeting() {
+    final hour = DateTime.now().hour;
+    if (hour >= 5 && hour < 12) {
+      return "Good Morning";
+    } else if (hour >= 12 && hour < 17) {
+      return "Good Afternoon";
+    } else if (hour >= 17 && hour < 21) {
+      return "Good Evening";
+    } else {
+      return "Good Night";
+    }
+  }
+
+  Widget _buildHeader(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context);
+    final userName = authProvider.user?.name ?? "User";
+    
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("Good Morning, Alex", style: GoogleFonts.poppins(color: Colors.white70, fontSize: 16)),
+            Text("${_getGreeting()}, $userName", style: GoogleFonts.poppins(color: Colors.white70, fontSize: 16)),
             Text("Hydrosmart", style: GoogleFonts.poppins(color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold)),
           ],
         ),

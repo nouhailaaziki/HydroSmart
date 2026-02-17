@@ -4,34 +4,95 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'providers/water_provider.dart';
 import 'providers/auth_provider.dart';
+import 'screens/profile_screen.dart';
+import 'theme/app_colors.dart';
+import 'theme/app_text_styles.dart';
+import 'utils/constants.dart';
 
-class SettingsScreen extends StatelessWidget {
+class SettingsScreen extends StatefulWidget {
+  @override
+  State<SettingsScreen> createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends State<SettingsScreen> {
+  String _selectedLanguage = 'English';
+  bool _darkModeEnabled = true;
+
   @override
   Widget build(BuildContext context) {
     final waterProvider = Provider.of<WaterProvider>(context);
 
-    return Padding(
+    return SingleChildScrollView(
       padding: const EdgeInsets.all(20.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("Preferences", style: GoogleFonts.poppins(fontSize: 24, fontWeight: FontWeight.bold)),
+          Text("Settings", style: GoogleFonts.poppins(fontSize: 28, fontWeight: FontWeight.bold)),
           const SizedBox(height: 30),
+          
+          // Weekly Goal Setter
           _buildGoalSetter(waterProvider),
-          const SizedBox(height: 20),
+          const SizedBox(height: 24),
+          
+          // Preferences Section
+          _buildSectionHeader("Preferences"),
+          const SizedBox(height: 12),
           _buildToggleOption("Leak Detection", waterProvider.leakDetectionEnabled, waterProvider.toggleLeakDetection),
-          _buildToggleOption("Smart Notifications", waterProvider.notificationsEnabled, waterProvider.toggleNotifications),
-          const SizedBox(height: 20),
+          
+          // Notifications Settings
+          _buildNotificationsSection(waterProvider),
+          const SizedBox(height: 24),
+          
+          // Language Selection
+          _buildSectionHeader("Language"),
+          const SizedBox(height: 12),
+          _buildLanguageSelector(),
+          const SizedBox(height: 24),
+          
+          // Theme Mode
+          _buildSectionHeader("Appearance"),
+          const SizedBox(height: 12),
+          _buildToggleOption("Dark Mode", _darkModeEnabled, (value) {
+            setState(() {
+              _darkModeEnabled = value;
+            });
+          }),
+          const SizedBox(height: 24),
+          
+          // Account Section
+          _buildSectionHeader("Account"),
+          const SizedBox(height: 12),
+          _buildProfileButton(context),
+          const SizedBox(height: 12),
           _buildLogoutButton(context),
+          const SizedBox(height: 24),
+          
+          // About Section
+          _buildSectionHeader("About"),
+          const SizedBox(height: 12),
+          _buildInfoTile("App Version", AppConstants.appVersion),
+          _buildActionTile("Privacy Policy", Icons.policy, () {
+            // Open privacy policy
+          }),
+          _buildActionTile("Terms of Service", Icons.description, () {
+            // Open terms
+          }),
         ],
       ),
+    );
+  }
+
+  Widget _buildSectionHeader(String title) {
+    return Text(
+      title,
+      style: AppTextStyles.heading3,
     );
   }
 
   Widget _buildGoalSetter(WaterProvider provider) {
     return GlassmorphicContainer(
       width: double.infinity,
-      height: 150,
+      height: 160,
       borderRadius: 20,
       blur: 20,
       alignment: Alignment.center,
@@ -48,28 +109,153 @@ class SettingsScreen extends StatelessWidget {
           Colors.white.withOpacity(0.1),
         ],
       ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text("Weekly Goal: ${provider.weeklyGoal.toInt()}L",
-              style: const TextStyle(fontSize: 20, color: Colors.white)),
-          Slider(
-            value: provider.weeklyGoal,
-            min: 5,
-            max: 100,
-            divisions: 19,
-            activeColor: Colors.cyanAccent,
-            onChanged: (val) => provider.updateGoal(val),
-          ),
+      child: Padding(
+        padding: EdgeInsets.all(16),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "Weekly Goal",
+                  style: AppTextStyles.heading3.copyWith(fontSize: 18),
+                ),
+                Text(
+                  "${provider.weeklyGoal.toInt()}L",
+                  style: AppTextStyles.heading2.copyWith(color: AppColors.primary),
+                ),
+              ],
+            ),
+            SizedBox(height: 16),
+            Slider(
+              value: provider.weeklyGoal,
+              min: AppConstants.minWeeklyGoal,
+              max: AppConstants.maxWeeklyGoal,
+              divisions: 19,
+              activeColor: Colors.cyanAccent,
+              label: "${provider.weeklyGoal.toInt()}L",
+              onChanged: (val) => provider.updateGoal(val),
+            ),
+            Text(
+              "Adjust your weekly water usage goal",
+              style: AppTextStyles.small,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNotificationsSection(WaterProvider provider) {
+    return ExpansionTile(
+      title: Text(
+        "Notifications",
+        style: AppTextStyles.body,
+      ),
+      leading: Icon(Icons.notifications_outlined, color: AppColors.primary),
+      trailing: Switch(
+        value: provider.notificationsEnabled,
+        activeColor: Colors.cyanAccent,
+        onChanged: provider.toggleNotifications,
+      ),
+      children: [
+        _buildToggleOption("Daily Usage Reminders", true, (value) {}),
+        _buildToggleOption("Goal Achievement Alerts", true, (value) {}),
+        _buildToggleOption("Leak Alerts", true, (value) {}),
+        _buildToggleOption("Vacation Mode Alerts", true, (value) {}),
+      ],
+    );
+  }
+
+  Widget _buildLanguageSelector() {
+    return GlassmorphicContainer(
+      width: double.infinity,
+      height: 70,
+      borderRadius: 15,
+      blur: 20,
+      alignment: Alignment.center,
+      border: 2,
+      linearGradient: LinearGradient(
+        colors: [
+          Colors.white.withOpacity(0.1),
+          Colors.white.withOpacity(0.05),
         ],
+      ),
+      borderGradient: LinearGradient(
+        colors: [
+          Colors.white.withOpacity(0.2),
+          Colors.white.withOpacity(0.1),
+        ],
+      ),
+      child: ListTile(
+        leading: Icon(Icons.language, color: AppColors.primary),
+        title: Text("Language", style: AppTextStyles.body),
+        trailing: DropdownButton<String>(
+          value: _selectedLanguage,
+          dropdownColor: AppColors.backgroundDark,
+          style: AppTextStyles.body,
+          underline: SizedBox(),
+          items: ['English', 'Arabic', 'French'].map((String value) {
+            return DropdownMenuItem<String>(
+              value: value,
+              child: Text(value),
+            );
+          }).toList(),
+          onChanged: (String? newValue) {
+            if (newValue != null) {
+              setState(() {
+                _selectedLanguage = newValue;
+              });
+            }
+          },
+        ),
       ),
     );
   }
 
   Widget _buildToggleOption(String title, bool val, Function(bool) onChanged) {
     return ListTile(
-      title: Text(title),
-      trailing: Switch(value: val, activeColor: Colors.cyanAccent, onChanged: onChanged),
+      title: Text(title, style: AppTextStyles.body),
+      trailing: Switch(
+        value: val,
+        activeColor: Colors.cyanAccent,
+        onChanged: onChanged,
+      ),
+    );
+  }
+
+  Widget _buildProfileButton(BuildContext context) {
+    return GlassmorphicContainer(
+      width: double.infinity,
+      height: 60,
+      borderRadius: 15,
+      blur: 20,
+      alignment: Alignment.center,
+      border: 2,
+      linearGradient: LinearGradient(
+        colors: [
+          Colors.white.withOpacity(0.1),
+          Colors.white.withOpacity(0.05),
+        ],
+      ),
+      borderGradient: LinearGradient(
+        colors: [
+          Colors.white.withOpacity(0.2),
+          Colors.white.withOpacity(0.1),
+        ],
+      ),
+      child: ListTile(
+        leading: Icon(Icons.person_outline, color: AppColors.primary),
+        title: Text("Edit Profile", style: AppTextStyles.body),
+        trailing: Icon(Icons.arrow_forward_ios, color: Colors.white54, size: 16),
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => ProfileScreen()),
+          );
+        },
+      ),
     );
   }
 
@@ -122,6 +308,25 @@ class SettingsScreen extends StatelessWidget {
           );
         },
       ),
+    );
+  }
+
+  Widget _buildInfoTile(String title, String value) {
+    return ListTile(
+      title: Text(title, style: AppTextStyles.body),
+      trailing: Text(
+        value,
+        style: AppTextStyles.caption.copyWith(color: AppColors.primary),
+      ),
+    );
+  }
+
+  Widget _buildActionTile(String title, IconData icon, VoidCallback onTap) {
+    return ListTile(
+      leading: Icon(icon, color: AppColors.primary),
+      title: Text(title, style: AppTextStyles.body),
+      trailing: Icon(Icons.arrow_forward_ios, color: Colors.white54, size: 16),
+      onTap: onTap,
     );
   }
 }

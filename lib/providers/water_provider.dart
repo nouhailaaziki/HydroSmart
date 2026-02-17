@@ -177,7 +177,7 @@ class WaterProvider with ChangeNotifier {
   }
 
   void _adjustGoalAfterSuccess() {
-    final reduction = _weeklyGoal * 0.075; // 7.5% reduction
+    final reduction = _weeklyGoal * AppConstants.goalReductionPercentage;
     _weeklyGoal = (_weeklyGoal - reduction).clamp(
       AppConstants.minWeeklyGoal,
       AppConstants.maxWeeklyGoal,

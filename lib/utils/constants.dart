@@ -42,6 +42,9 @@ class AppConstants {
   static const int pointsAIInteraction = 5;
   static const int pointsProfileComplete = 50;
   
+  // Goal Adjustment
+  static const double goalReductionPercentage = 0.075; // 7.5% reduction after success
+  
   // Vacation Mode
   static const int vacationModeThresholdDays = 3;
 }

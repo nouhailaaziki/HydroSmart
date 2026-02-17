@@ -69,10 +69,10 @@ class Validators {
   }
 
   static Color getPasswordStrengthColor(double strength) {
-    if (strength < 0.3) return Color(0xFFF44336);
-    if (strength < 0.6) return Color(0xFFFFC107);
-    if (strength < 0.8) return Color(0xFF2196F3);
-    return Color(0xFF4CAF50);
+    if (strength < 0.3) return Color(0xFFF44336); // AppColors.error
+    if (strength < 0.6) return Color(0xFFFFC107); // AppColors.warning
+    if (strength < 0.8) return Color(0xFF2196F3); // AppColors.info
+    return Color(0xFF4CAF50); // AppColors.success
   }
 
   // Family Size Validation

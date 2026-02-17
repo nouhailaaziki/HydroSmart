@@ -231,7 +231,7 @@ class AppLocalizations {
       'password': 'كلمة المرور',
       'create_strong_password': 'أنشئ كلمة مرور قوية',
       'family_size_hint': 'عدد أفراد العائلة',
-      'phone_hint': '123 456 7890 20+',
+      'phone_hint': '+20 123 456 7890',
       'phone_optional': 'رقم الهاتف (اختياري)',
       
       // Validation

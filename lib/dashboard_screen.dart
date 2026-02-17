@@ -5,6 +5,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:provider/provider.dart';
 import 'providers/water_provider.dart';
 import 'providers/auth_provider.dart';
+import 'screens/achievements_screen.dart';
 
 class HydrosmartDashboard extends StatelessWidget {
   @override
@@ -44,6 +45,7 @@ class HydrosmartDashboard extends StatelessWidget {
 
   Widget _buildHeader(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
+    final waterProvider = Provider.of<WaterProvider>(context);
     final userName = authProvider.user?.name ?? "User";
     
     return Row(
@@ -54,6 +56,24 @@ class HydrosmartDashboard extends StatelessWidget {
           children: [
             Text("${_getGreeting()}, $userName", style: GoogleFonts.poppins(color: Colors.white70, fontSize: 16)),
             Text("Hydrosmart", style: GoogleFonts.poppins(color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold)),
+            SizedBox(height: 4),
+            Row(
+              children: [
+                Icon(Icons.star, color: Colors.amber, size: 16),
+                SizedBox(width: 4),
+                Text(
+                  "${waterProvider.totalPoints} points",
+                  style: GoogleFonts.poppins(color: Colors.amber, fontSize: 14, fontWeight: FontWeight.w600),
+                ),
+                SizedBox(width: 12),
+                Icon(Icons.local_fire_department, color: Colors.orangeAccent, size: 16),
+                SizedBox(width: 4),
+                Text(
+                  "${waterProvider.currentStreak} day streak",
+                  style: GoogleFonts.poppins(color: Colors.orangeAccent, fontSize: 14, fontWeight: FontWeight.w600),
+                ),
+              ],
+            ),
           ],
         ),
         CircleAvatar(backgroundColor: Colors.white24, child: Icon(Icons.person, color: Colors.white)),
@@ -95,39 +115,241 @@ class HydrosmartDashboard extends StatelessWidget {
   }
 
   Widget _buildUsageChart() {
-    return Container(
-      height: 180,
-      padding: EdgeInsets.all(15),
-      decoration: BoxDecoration(color: Colors.white.withOpacity(0.05), borderRadius: BorderRadius.circular(20)),
-      child: LineChart(LineChartData(
-          gridData: FlGridData(show: false),
-          titlesData: FlTitlesData(show: false),
-          borderData: FlBorderData(show: false),
-          lineBarsData: [LineChartBarData(
-            spots: [FlSpot(0, 2), FlSpot(1, 1.5), FlSpot(2, 4), FlSpot(3, 3)],
-            isCurved: true,
-            color: Colors.cyanAccent,
-            barWidth: 4,
-            dotData: FlDotData(show: false),
-            belowBarData: BarAreaData(show: true, color: Colors.cyanAccent.withOpacity(0.1)),
-          )])),
+    return Consumer<WaterProvider>(
+      builder: (context, waterProvider, _) {
+        final last7Days = waterProvider.getLastSevenDays();
+        
+        return Container(
+          height: 220,
+          padding: EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.05), 
+            borderRadius: BorderRadius.circular(20)
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "Daily Usage (Last 7 Days)",
+                    style: GoogleFonts.poppins(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: Colors.cyanAccent.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      "Liters",
+                      style: GoogleFonts.poppins(
+                        color: Colors.cyanAccent,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 16),
+              Expanded(
+                child: LineChart(
+                  LineChartData(
+                    gridData: FlGridData(
+                      show: true,
+                      drawVerticalLine: false,
+                      horizontalInterval: 1,
+                      getDrawingHorizontalLine: (value) {
+                        return FlLine(
+                          color: Colors.white.withOpacity(0.1),
+                          strokeWidth: 1,
+                        );
+                      },
+                    ),
+                    titlesData: FlTitlesData(
+                      show: true,
+                      rightTitles: AxisTitles(
+                        sideTitles: SideTitles(showTitles: false),
+                      ),
+                      topTitles: AxisTitles(
+                        sideTitles: SideTitles(showTitles: false),
+                      ),
+                      bottomTitles: AxisTitles(
+                        sideTitles: SideTitles(
+                          showTitles: true,
+                          reservedSize: 30,
+                          interval: 1,
+                          getTitlesWidget: (value, meta) {
+                            if (value.toInt() >= 0 && value.toInt() < last7Days.length) {
+                              final date = last7Days[value.toInt()].date;
+                              final dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+                              return Padding(
+                                padding: EdgeInsets.only(top: 8),
+                                child: Text(
+                                  dayNames[date.weekday % 7],
+                                  style: TextStyle(
+                                    color: Colors.white54,
+                                    fontSize: 10,
+                                  ),
+                                ),
+                              );
+                            }
+                            return Text('');
+                          },
+                        ),
+                      ),
+                      leftTitles: AxisTitles(
+                        sideTitles: SideTitles(
+                          showTitles: true,
+                          reservedSize: 30,
+                          interval: 1,
+                          getTitlesWidget: (value, meta) {
+                            return Text(
+                              value.toInt().toString(),
+                              style: TextStyle(
+                                color: Colors.white54,
+                                fontSize: 10,
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                    borderData: FlBorderData(show: false),
+                    minX: 0,
+                    maxX: (last7Days.length - 1).toDouble(),
+                    minY: 0,
+                    maxY: last7Days.isEmpty ? 5 : last7Days.map((r) => r.usage).reduce((a, b) => a > b ? a : b) + 1,
+                    lineBarsData: [
+                      LineChartBarData(
+                        spots: last7Days.asMap().entries.map((entry) {
+                          return FlSpot(entry.key.toDouble(), entry.value.usage);
+                        }).toList(),
+                        isCurved: true,
+                        gradient: LinearGradient(
+                          colors: [Colors.cyanAccent, Colors.blueAccent],
+                        ),
+                        barWidth: 3,
+                        isStrokeCapRound: true,
+                        dotData: FlDotData(
+                          show: true,
+                          getDotPainter: (spot, percent, barData, index) {
+                            return FlDotCirclePainter(
+                              radius: 4,
+                              color: Colors.cyanAccent,
+                              strokeWidth: 2,
+                              strokeColor: Colors.white,
+                            );
+                          },
+                        ),
+                        belowBarData: BarAreaData(
+                          show: true,
+                          gradient: LinearGradient(
+                            colors: [
+                              Colors.cyanAccent.withOpacity(0.3),
+                              Colors.cyanAccent.withOpacity(0.0),
+                            ],
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 
   Widget _buildQuickStats(BuildContext context) {
     final waterData = Provider.of<WaterProvider>(context);
-    return Row(
+    return Column(
       children: [
-        // Inside _buildQuickStats
-        Expanded(child: _statTile(
-            !waterData.leakDetectionEnabled ? "OFF" : (waterData.isLeakDetected ? "ALERT" : "Secure"),
-            "Leak Status",
-            waterData.leakDetectionEnabled ? (waterData.isLeakDetected ? Icons.warning : Icons.check_circle) : Icons.do_not_disturb_on,
-            waterData.leakDetectionEnabled ? (waterData.isLeakDetected ? Colors.redAccent : Colors.greenAccent) : Colors.grey
-        )),
-        SizedBox(width: 15),
-        Expanded(child: _statTile("2.1L", "Daily Avg", Icons.water_drop, Colors.blueAccent)),
+        Row(
+          children: [
+            Expanded(child: _statTile(
+                !waterData.leakDetectionEnabled ? "OFF" : (waterData.isLeakDetected ? "ALERT" : "Secure"),
+                "Leak Status",
+                waterData.leakDetectionEnabled ? (waterData.isLeakDetected ? Icons.warning : Icons.check_circle) : Icons.do_not_disturb_on,
+                waterData.leakDetectionEnabled ? (waterData.isLeakDetected ? Colors.redAccent : Colors.greenAccent) : Colors.grey
+            )),
+            SizedBox(width: 15),
+            Expanded(child: _statTile("2.1L", "Daily Avg", Icons.water_drop, Colors.blueAccent)),
+          ],
+        ),
+        SizedBox(height: 15),
+        _buildAchievementsCard(context, waterData),
       ],
+    );
+  }
+
+  Widget _buildAchievementsCard(BuildContext context, WaterProvider waterData) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => AchievementsScreen()),
+        );
+      },
+      child: Container(
+        padding: EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Colors.amber.withOpacity(0.2),
+              Colors.orange.withOpacity(0.1),
+            ],
+          ),
+          borderRadius: BorderRadius.circular(15),
+          border: Border.all(color: Colors.amber.withOpacity(0.3)),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.amber.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(Icons.emoji_events, color: Colors.amber, size: 28),
+            ),
+            SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Achievements",
+                    style: GoogleFonts.poppins(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: 4),
+                  Text(
+                    "${waterData.unlockedAchievements.length}/${waterData.achievements.length} unlocked",
+                    style: GoogleFonts.poppins(
+                      color: Colors.white70,
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(Icons.arrow_forward_ios, color: Colors.white54, size: 16),
+          ],
+        ),
+      ),
     );
   }
 

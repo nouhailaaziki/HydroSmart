@@ -621,6 +621,9 @@ class WaterProvider with ChangeNotifier {
     final consumption = _calculateChallengeConsumption();
     final target = _currentChallenge!.targetConsumption;
 
+    // Guard against division by zero
+    if (target == 0.0) return 0.0;
+
     return (consumption / target).clamp(0.0, 1.0);
   }
 

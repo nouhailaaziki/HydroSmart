@@ -21,6 +21,7 @@ class OnboardingHouseholdScreen extends StatefulWidget {
 }
 
 class _OnboardingHouseholdScreenState extends State<OnboardingHouseholdScreen> {
+  static const int defaultMemberAge = 25;
   final _formKey = GlobalKey<FormState>();
   final _uuid = const Uuid();
   List<HouseholdMember> _members = [];
@@ -58,7 +59,7 @@ class _OnboardingHouseholdScreenState extends State<OnboardingHouseholdScreen> {
         if (_members.length <= i) {
           _members.add(HouseholdMember(
             id: _uuid.v4(),
-            age: 25,
+            age: defaultMemberAge,
           ));
         }
         _ageControllers.add(TextEditingController(text: _members[i].age.toString()));
@@ -70,7 +71,7 @@ class _OnboardingHouseholdScreenState extends State<OnboardingHouseholdScreen> {
     if (_formKey.currentState!.validate()) {
       // Update ages from controllers
       for (int i = 1; i < _members.length; i++) {
-        final age = int.tryParse(_ageControllers[i - 1].text) ?? 25;
+        final age = int.tryParse(_ageControllers[i - 1].text) ?? defaultMemberAge;
         _members[i] = _members[i].copyWith(age: age);
       }
       widget.onHouseholdSubmitted(_members);

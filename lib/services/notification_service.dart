@@ -1,7 +1,7 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:timezone/timezone.dart' as tz;
-import 'package:timezone/data/latest_all.dart' as tz;
+import 'package:timezone/data/latest_all.dart' as tz_data;
 
 class NotificationService {
   static final NotificationService _instance = NotificationService._internal();
@@ -18,7 +18,7 @@ class NotificationService {
     if (_isInitialized) return;
 
     // Initialize timezone data
-    tz.initializeTimeZones();
+    tz_data.initializeTimeZones();
 
     const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
     const iosSettings = DarwinInitializationSettings(

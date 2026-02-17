@@ -12,8 +12,8 @@ class ChallengeService {
   // Progressive reduction percentage after each successful completion
   static const double progressiveReductionPercentage = 3.0;
 
-  // Minimum consumption threshold (50% of original estimate)
-  static const double minimumReductionPercentage = 50.0;
+  // Maximum reduction percentage that can be achieved (50% of original estimate)
+  static const double maximumReductionPercentage = 50.0;
 
   /// Create a new challenge based on household data
   static Challenge createChallenge({
@@ -69,8 +69,8 @@ class ChallengeService {
         (progressiveReductionPercentage * newCompletionCount);
 
     // Apply minimum threshold
-    final maxReduction = cumulativeReduction > minimumReductionPercentage
-        ? minimumReductionPercentage
+    final maxReduction = cumulativeReduction > maximumReductionPercentage
+        ? maximumReductionPercentage
         : cumulativeReduction;
 
     final targetConsumption = ConsumptionEstimationService.calculateTargetWithReduction(
@@ -165,6 +165,6 @@ class ChallengeService {
 
   /// Check if maximum savings has been reached
   static bool hasReachedMaxSavings(double reductionPercentage) {
-    return reductionPercentage >= minimumReductionPercentage;
+    return reductionPercentage >= maximumReductionPercentage;
   }
 }

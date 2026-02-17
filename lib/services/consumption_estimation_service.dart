@@ -1,11 +1,17 @@
 import '../models/household_member_model.dart';
 
 class ConsumptionEstimationService {
-  // Average daily water consumption in liters per person by age group
-  static const double childConsumption = 120.0; // 0-12 years
-  static const double teenConsumption = 150.0; // 13-17 years
-  static const double adultConsumption = 165.0; // 18-64 years
-  static const double seniorConsumption = 140.0; // 65+ years
+  /// Average daily water consumption in liters per person for children (0-12 years)
+  static const double childConsumption = 120.0;
+  
+  /// Average daily water consumption in liters per person for teenagers (13-17 years)
+  static const double teenConsumption = 150.0;
+  
+  /// Average daily water consumption in liters per person for adults (18-64 years)
+  static const double adultConsumption = 165.0;
+  
+  /// Average daily water consumption in liters per person for seniors (65+ years)
+  static const double seniorConsumption = 140.0;
 
   /// Estimates daily water consumption for a household based on member ages
   static double estimateDailyConsumption(List<HouseholdMember> members) {

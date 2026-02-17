@@ -6,7 +6,7 @@ import 'consumption_estimation_service.dart';
 /// Handles data recalculation when household configuration changes
 class DataRecalculationService {
   /// Historical snapshot of household configuration
-  static Map<DateTime, List<HouseholdMember>> _householdHistory = {};
+  static final Map<DateTime, List<HouseholdMember>> _householdHistory = {};
 
   /// Track when household configuration changes
   static void recordHouseholdChange(List<HouseholdMember> members) {

@@ -247,7 +247,6 @@ class _HouseholdSettingsScreenState extends State<HouseholdSettingsScreen> {
 
   Widget _buildMemberCard(int index) {
     final member = _members[index];
-    final ageController = TextEditingController(text: member.age.toString());
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -288,7 +287,7 @@ class _HouseholdSettingsScreenState extends State<HouseholdSettingsScreen> {
                   SizedBox(
                     width: 100,
                     child: TextFormField(
-                      controller: ageController,
+                      initialValue: member.age.toString(),
                       keyboardType: TextInputType.number,
                       style: const TextStyle(color: Colors.white),
                       decoration: InputDecoration(

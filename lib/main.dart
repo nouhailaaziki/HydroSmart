@@ -6,14 +6,17 @@ import 'package:provider/provider.dart';
 import 'providers/water_provider.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'providers/auth_provider.dart';
+import 'providers/language_provider.dart';
 import 'screens/login_screen.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'theme/app_theme.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await Hive.initFlutter();
   await Hive.openBox('chat_history');
+  await Hive.openBox('settings');
 
   try {
     await dotenv.load(fileName: ".env");
@@ -26,6 +29,7 @@ Future<void> main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => WaterProvider()),
         ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => LanguageProvider()),
       ],
       child: const HydrosmartApp(),
     ),
@@ -38,15 +42,13 @@ class HydrosmartApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isAuthenticated = context.watch<AuthProvider>().isAuthenticated;
+    final languageProvider = context.watch<LanguageProvider>();
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Hydrosmart',
-      theme: ThemeData(
-        brightness: Brightness.dark,
-        useMaterial3: true,
-        colorSchemeSeed: Colors.cyanAccent,
-      ),
+      theme: AppTheme.darkTheme,
+      locale: languageProvider.currentLocale,
       home: isAuthenticated ? const MainNavigationShell() : LoginScreen(),
     );
   }

@@ -363,23 +363,39 @@ class _AIAssistantScreenState extends State<AIAssistantScreen> {
   }
 
   Widget _buildInputArea() {
-    return GlassmorphicContainer(
-      width: double.infinity, height: 90, borderRadius: 0, blur: 20, alignment: Alignment.center, border: 0,
-      linearGradient: LinearGradient(colors: [Colors.black38, Colors.black38]),
-      borderGradient: const LinearGradient(colors: [Colors.transparent, Colors.transparent]),
+    return Container(
+      width: double.infinity,
+      height: 90,
+      decoration: BoxDecoration(
+        color: Color(0xFF001529).withOpacity(0.95),
+        border: Border(top: BorderSide(color: Colors.white.withOpacity(0.1), width: 1)),
+      ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         child: Row(
           children: [
             Expanded(
               child: TextField(
                 controller: _controller,
                 style: const TextStyle(color: Colors.white),
-                decoration: InputDecoration(hintText: "Ask something...", filled: true, fillColor: Colors.white.withOpacity(0.05), border: OutlineInputBorder(borderRadius: BorderRadius.circular(30), borderSide: BorderSide.none)),
+                decoration: InputDecoration(
+                  hintText: "Ask something...",
+                  filled: true,
+                  fillColor: Colors.white.withOpacity(0.1),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30),
+                    borderSide: BorderSide.none,
+                  ),
+                  contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                ),
                 onSubmitted: (_) => _sendMessage(),
               ),
             ),
-            IconButton(icon: const Icon(Icons.send_rounded, color: Colors.cyanAccent), onPressed: _sendMessage),
+            SizedBox(width: 8),
+            IconButton(
+              icon: const Icon(Icons.send_rounded, color: Colors.cyanAccent),
+              onPressed: _sendMessage,
+            ),
           ],
         ),
       ),

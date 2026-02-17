@@ -3,9 +3,11 @@ import 'package:glassmorphism/glassmorphism.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
+import 'signup_screen.dart';
 
 class LoginScreen extends StatelessWidget {
   final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +21,7 @@ class LoginScreen extends StatelessWidget {
         ),
         child: Center(
           child: GlassmorphicContainer(
-            width: 350, height: 450, borderRadius: 20, blur: 20, alignment: Alignment.center, border: 2,
+            width: 350, height: 500, borderRadius: 20, blur: 20, alignment: Alignment.center, border: 2,
             linearGradient: LinearGradient(colors: [Colors.white.withOpacity(0.1), Colors.white.withOpacity(0.05)]),
             borderGradient: LinearGradient(colors: [Colors.white24, Colors.white10]),
             child: Padding(
@@ -36,6 +38,7 @@ class LoginScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 20),
                   TextField(
+                    controller: _passwordController,
                     obscureText: true,
                     decoration: InputDecoration(hintText: "Password", hintStyle: TextStyle(color: Colors.white54)),
                     style: TextStyle(color: Colors.white),
@@ -44,9 +47,22 @@ class LoginScreen extends StatelessWidget {
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(backgroundColor: Colors.cyanAccent, foregroundColor: Colors.black),
                     onPressed: () {
-                      Provider.of<AuthProvider>(context, listen: false).login(_emailController.text, "password");
+                      Provider.of<AuthProvider>(context, listen: false).login(_emailController.text, _passwordController.text);
                     },
                     child: const Text("Login"),
+                  ),
+                  const SizedBox(height: 16),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => SignupScreen()),
+                      );
+                    },
+                    child: Text(
+                      "Don't have an account? Sign Up",
+                      style: TextStyle(color: Colors.cyanAccent),
+                    ),
                   ),
                 ],
               ),

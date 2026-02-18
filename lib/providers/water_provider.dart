@@ -81,15 +81,66 @@ class WaterProvider with ChangeNotifier {
   }
 
   void _initializeUsageHistory() {
-    // Initialize with some sample data for the last 7 days
+    // This will be populated from real meter readings
+    // Initialize empty for now
+    _usageHistory = [];
+  }
+
+  /// Get last seven days usage from actual meter readings
+  List<UsageRecord> getLastSevenDays() {
+    // If we don't have enough meter readings, return empty/partial data
+    if (_meterReadings.isEmpty) {
+      // Return placeholder data for the last 7 days
+      final now = DateTime.now();
+      return List.generate(7, (i) {
+        return UsageRecord(
+          date: now.subtract(Duration(days: 6 - i)),
+          usage: 0.0,
+          goal: 3.0,
+        );
+      });
+    }
+
+    // Get readings from the last 7 days
     final now = DateTime.now();
+    final sevenDaysAgo = now.subtract(const Duration(days: 7));
+    
+    final recentReadings = _meterReadings
+        .where((r) => r.timestamp.isAfter(sevenDaysAgo))
+        .toList();
+
+    // Create usage records for each day
+    final Map<String, double> dailyUsage = {};
+    
+    // Calculate daily consumption from consecutive readings
+    for (var i = 0; i < recentReadings.length; i++) {
+      final reading = recentReadings[i];
+      final dateKey = _getDateKey(reading.timestamp);
+      
+      if (reading.dailyConsumption != null) {
+        dailyUsage[dateKey] = (dailyUsage[dateKey] ?? 0.0) + reading.dailyConsumption!;
+      }
+    }
+
+    // Generate list for last 7 days
+    final records = <UsageRecord>[];
     for (int i = 6; i >= 0; i--) {
-      _usageHistory.add(UsageRecord(
-        date: now.subtract(Duration(days: i)),
-        usage: 2.0 + (i * 0.5),
-        goal: 3.0,
+      final date = now.subtract(Duration(days: i));
+      final dateKey = _getDateKey(date);
+      final usage = dailyUsage[dateKey] ?? 0.0;
+      
+      records.add(UsageRecord(
+        date: date,
+        usage: usage,
+        goal: _weeklyGoal / 7, // Daily goal
       ));
     }
+
+    return records;
+  }
+
+  String _getDateKey(DateTime date) {
+    return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
   }
 
   void updateGoal(double newGoal) {
@@ -148,11 +199,6 @@ class WaterProvider with ChangeNotifier {
       );
 
       if (allSame && !_vacationModeActive) {
-        // Vacation mode should be prompted
-        // This will be handled by the UI
-      }
-    }
-  }
 
   void enableVacationMode() {
     _vacationModeActive = true;
@@ -456,6 +502,32 @@ class WaterProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  /// Fail current challenge and restart with same goal (no reduction)
+  Future<void> failCurrentChallenge() async {
+    if (_currentChallenge == null || !_currentChallenge!.isActive) {
+      return;
+    }
+
+    final failedChallenge = _currentChallenge!;
+
+    // Mark as not completed (failed)
+    _currentChallenge = ChallengeService.completeChallenge(failedChallenge).copyWith(
+      isCompleted: false,
+    );
+    await _saveCurrentChallenge();
+
+    // Restart same challenge without reduction (keep same completion count)
+    _currentChallenge = ChallengeService.createChallenge(
+      type: failedChallenge.type,
+      householdMembers: _householdMembers,
+      customReduction: failedChallenge.reductionPercentage,
+      previousCompletions: failedChallenge.completionCount, // Don't increment
+    );
+
+    await _saveCurrentChallenge();
+    notifyListeners();
+  }
+
   /// Pause current challenge
   Future<void> pauseChallenge() async {
     if (_currentChallenge == null || !_currentChallenge!.isActive) {
@@ -502,12 +574,24 @@ class WaterProvider with ChangeNotifier {
       return;
     }
 
+    // Check if challenge period has ended
+    if (_currentChallenge!.endDate == null) return;
+    
+    final now = DateTime.now();
+    if (now.isBefore(_currentChallenge!.endDate!)) {
+      return; // Challenge still ongoing
+    }
+
     // Calculate consumption for challenge period
     final consumption = _calculateChallengeConsumption();
 
-    // Check if challenge should be auto-completed
-    if (ChallengeService.shouldAutoComplete(_currentChallenge!, consumption)) {
+    // Check if target was met
+    if (consumption <= _currentChallenge!.targetConsumption) {
+      // Success - create progressive challenge
       await completeCurrentChallenge();
+    } else {
+      // Failure - restart with same goal
+      await failCurrentChallenge();
     }
   }
 

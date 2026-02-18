@@ -1,17 +1,34 @@
 import 'package:flutter/material.dart';
 
 class Validators {
-  // Name Validation
+  // Name Validation - Enhanced
   static String? validateName(String? value) {
     if (value == null || value.trim().isEmpty) {
       return 'Name is required';
     }
-    if (value.trim().length < 2) {
+
+    final trimmed = value.trim();
+
+    // Check for minimum length
+    if (trimmed.length < 2) {
       return 'Name must be at least 2 characters';
     }
-    if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(value)) {
-      return 'Name can only contain letters and spaces';
+
+    // Check if starts or ends with space
+    if (value.startsWith(' ') || value.endsWith(' ')) {
+      return 'Name cannot start or end with a space';
     }
+
+    // Check for consecutive spaces
+    if (value.contains('  ')) {
+      return 'Name cannot contain consecutive spaces';
+    }
+
+    // Check for only alphabetic characters and single spaces
+    if (!RegExp(r'^[a-zA-Z]+(\s[a-zA-Z]+)*$').hasMatch(trimmed)) {
+      return 'Name can only contain letters and single spaces';
+    }
+
     return null;
   }
 
@@ -102,6 +119,51 @@ class Validators {
     }
     if (value.replaceAll(RegExp(r'[\s\-()]'), '').length < 10) {
       return 'Phone number must be at least 10 digits';
+    }
+    return null;
+  }
+
+  // Age Validation
+  static String? validateAge(String? value, {int min = 0, int max = 120}) {
+    if (value == null || value.trim().isEmpty) {
+      return 'Age is required';
+    }
+    final age = int.tryParse(value);
+    if (age == null) {
+      return 'Please enter a valid number';
+    }
+    if (age < min || age > max) {
+      return 'Age must be between $min and $max';
+    }
+    return null;
+  }
+
+  // Meter Reading Validation
+  static String? validateMeterReading(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return 'Meter reading is required';
+    }
+    final reading = double.tryParse(value);
+    if (reading == null) {
+      return 'Please enter a valid number';
+    }
+    if (reading < 0) {
+      return 'Meter reading cannot be negative';
+    }
+    return null;
+  }
+
+  // Household Size Validation
+  static String? validateHouseholdSize(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return 'Household size is required';
+    }
+    final size = int.tryParse(value);
+    if (size == null) {
+      return 'Please enter a valid number';
+    }
+    if (size < 1 || size > 20) {
+      return 'Household size must be between 1 and 20';
     }
     return null;
   }

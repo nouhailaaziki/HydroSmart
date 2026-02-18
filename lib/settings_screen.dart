@@ -6,6 +6,8 @@ import 'providers/water_provider.dart';
 import 'providers/auth_provider.dart';
 import 'providers/language_provider.dart';
 import 'screens/profile_screen.dart';
+import 'screens/household_settings_screen.dart';
+import 'screens/challenge_management_screen.dart';
 import 'theme/app_colors.dart';
 import 'theme/app_text_styles.dart';
 import 'utils/constants.dart';
@@ -33,6 +35,34 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
           // Weekly Goal Setter
           _buildGoalSetter(waterProvider),
+          const SizedBox(height: 24),
+
+          // New Features Section
+          _buildSectionHeader("Water Tracking"),
+          const SizedBox(height: 12),
+          _buildNavigationTile(
+            "Household Members",
+            Icons.family_restroom,
+            () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const HouseholdSettingsScreen(),
+                ),
+              );
+            },
+          ),
+          const SizedBox(height: 12),
+          _buildNavigationTile(
+            "Challenge Management",
+            Icons.emoji_events,
+            () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const ChallengeManagementScreen(),
+                ),
+              );
+            },
+          ),
           const SizedBox(height: 24),
 
           // Preferences Section
@@ -325,6 +355,35 @@ class _SettingsScreenState extends State<SettingsScreen> {
       title: Text(title, style: AppTextStyles.body),
       trailing: Icon(Icons.arrow_forward_ios, color: Colors.white54, size: 16),
       onTap: onTap,
+    );
+  }
+
+  Widget _buildNavigationTile(String title, IconData icon, VoidCallback onTap) {
+    return GlassmorphicContainer(
+      width: double.infinity,
+      height: 70,
+      borderRadius: 15,
+      blur: 20,
+      alignment: Alignment.center,
+      border: 2,
+      linearGradient: LinearGradient(
+        colors: [
+          Colors.white.withOpacity(0.1),
+          Colors.white.withOpacity(0.05),
+        ],
+      ),
+      borderGradient: LinearGradient(
+        colors: [
+          Colors.white.withOpacity(0.2),
+          Colors.white.withOpacity(0.1),
+        ],
+      ),
+      child: ListTile(
+        leading: Icon(icon, color: AppColors.primary),
+        title: Text(title, style: AppTextStyles.body),
+        trailing: Icon(Icons.arrow_forward_ios, color: Colors.white54, size: 16),
+        onTap: onTap,
+      ),
     );
   }
 }

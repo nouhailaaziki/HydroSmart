@@ -8,6 +8,9 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'providers/auth_provider.dart';
 import 'providers/language_provider.dart';
 import 'screens/login_screen.dart';
+import 'screens/onboarding/onboarding_flow_screen.dart';
+import 'screens/daily_meter_input_screen.dart';
+import 'screens/welcome_back_screen.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'theme/app_theme.dart';
 
@@ -17,6 +20,10 @@ Future<void> main() async {
   await Hive.initFlutter();
   await Hive.openBox('chat_history');
   await Hive.openBox('settings');
+  await Hive.openBox('user');
+  await Hive.openBox('meter_readings');
+  await Hive.openBox('challenges');
+  await Hive.openBox('user_settings');
 
   try {
     await dotenv.load(fileName: ".env");
@@ -24,11 +31,17 @@ Future<void> main() async {
     debugPrint("Warning: .env file not found");
   }
 
+  final authProvider = AuthProvider();
+  final waterProvider = WaterProvider();
+
+  await authProvider.initialize();
+  await waterProvider.initialize();
+
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => WaterProvider()),
-        ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider.value(value: waterProvider),
+        ChangeNotifierProvider.value(value: authProvider),
         ChangeNotifierProvider(create: (_) => LanguageProvider()),
       ],
       child: const HydrosmartApp(),
@@ -41,15 +54,26 @@ class HydrosmartApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isAuthenticated = context.watch<AuthProvider>().isAuthenticated;
+    final authProvider = context.watch<AuthProvider>();
+    final isAuthenticated = authProvider.isAuthenticated;
+    final hasCompletedOnboarding = authProvider.hasCompletedOnboarding;
     final languageProvider = context.watch<LanguageProvider>();
+
+    Widget home;
+    if (!isAuthenticated) {
+      home = LoginScreen();
+    } else if (!hasCompletedOnboarding) {
+      home = const OnboardingFlowScreen();
+    } else {
+      home = const MainNavigationShell();
+    }
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Hydrosmart',
       theme: AppTheme.darkTheme,
       locale: languageProvider.currentLocale,
-      home: isAuthenticated ? const MainNavigationShell() : LoginScreen(),
+      home: home,
     );
   }
 }
@@ -71,6 +95,41 @@ class _MainNavigationShellState extends State<MainNavigationShell> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    _checkForInactivity();
+  }
+
+  Future<void> _checkForInactivity() async {
+    // Give UI time to load
+    await Future.delayed(const Duration(milliseconds: 500));
+
+    if (!mounted) return;
+
+    final waterProvider = context.read<WaterProvider>();
+    final daysAway = waterProvider.getDaysSinceLastOpen();
+
+    if (daysAway > 1) {
+      // Show welcome back screen
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => WelcomeBackScreen(daysAway: daysAway),
+          fullscreenDialog: true,
+        ),
+      );
+    }
+  }
+
+  void _showMeterInput() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const DailyMeterInputScreen(),
+        fullscreenDialog: true,
+      ),
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
@@ -86,6 +145,18 @@ class _MainNavigationShellState extends State<MainNavigationShell> {
             children: _screens
         ),
       ),
+      floatingActionButton: _selectedIndex == 0
+          ? FloatingActionButton.extended(
+              onPressed: _showMeterInput,
+              backgroundColor: Colors.cyanAccent,
+              foregroundColor: Colors.black,
+              icon: const Icon(Icons.water_drop),
+              label: const Text(
+                'Log Reading',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+            )
+          : null,
       bottomNavigationBar: NavigationBar(
         height: 70,
         selectedIndex: _selectedIndex,

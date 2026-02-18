@@ -17,6 +17,7 @@ class ThemeProvider with ChangeNotifier {
       _isDarkMode = box.get('isDarkMode', defaultValue: true);
       notifyListeners();
     } catch (e) {
+      debugPrint('Error loading theme: $e');
       _isDarkMode = true;
     }
   }

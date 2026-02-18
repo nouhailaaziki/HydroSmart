@@ -202,7 +202,7 @@ class _OnboardingFlowScreenState extends State<OnboardingFlowScreen> {
         // Show error but still allow navigation to continue
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Setup partially completed. You can continue using the app.'),
+            content: Text('Setup completed with some errors. You can continue using the app.'),
             backgroundColor: Colors.orange,
             duration: const Duration(seconds: 4),
           ),

@@ -5,6 +5,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:provider/provider.dart';
 import 'providers/water_provider.dart';
 import 'providers/auth_provider.dart';
+import 'models/challenge_model.dart';
 import 'screens/achievements_screen.dart';
 
 class HydrosmartDashboard extends StatelessWidget {
@@ -85,6 +86,33 @@ class HydrosmartDashboard extends StatelessWidget {
     // Access the live data
     final waterData = Provider.of<WaterProvider>(context);
 
+    // Calculate current period consumption from meter readings
+    double currentPeriodConsumption = 0.0;
+    String periodLabel = "Weekly Progress";
+    
+    if (waterData.currentChallenge != null && waterData.currentChallenge!.isActive) {
+      // Use challenge-based progress
+      final challenge = waterData.currentChallenge!;
+      currentPeriodConsumption = waterData.meterReadings
+          .where((r) => r.timestamp.isAfter(challenge.startDate))
+          .map((r) => r.dailyConsumption ?? 0.0)
+          .fold(0.0, (sum, consumption) => sum + consumption);
+      
+      periodLabel = challenge.type == ChallengeType.weekly 
+          ? "Weekly Progress" 
+          : "Monthly Progress";
+    } else {
+      // Fallback to weekly calculation
+      final weekAgo = DateTime.now().subtract(const Duration(days: 7));
+      currentPeriodConsumption = waterData.meterReadings
+          .where((r) => r.timestamp.isAfter(weekAgo))
+          .map((r) => r.dailyConsumption ?? 0.0)
+          .fold(0.0, (sum, consumption) => sum + consumption);
+    }
+
+    final goal = waterData.currentChallenge?.targetConsumption ?? waterData.weeklyGoal;
+    final isOverLimit = currentPeriodConsumption > goal;
+
     return GlassmorphicContainer(
       width: MediaQuery.of(context).size.width - 40,
       height: 200,
@@ -97,16 +125,16 @@ class HydrosmartDashboard extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text("Weekly Progress", style: GoogleFonts.poppins(color: Colors.white)),
+          Text(periodLabel, style: GoogleFonts.poppins(color: Colors.white)),
           SizedBox(height: 10),
           Text(
-              "${waterData.currentUsage.toStringAsFixed(1)}L / ${waterData.weeklyGoal.toInt()}L",
+              "${currentPeriodConsumption.toStringAsFixed(1)}L / ${goal.toStringAsFixed(0)}L",
               style: GoogleFonts.poppins(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold)
           ),
           Text(
-              waterData.currentUsage > waterData.weeklyGoal ? "Over Limit! ⚠️" : "Status: On Track ✅",
+              isOverLimit ? "Over Limit! ⚠️" : "Status: On Track ✅",
               style: GoogleFonts.poppins(
-                  color: waterData.currentUsage > waterData.weeklyGoal ? Colors.redAccent : Colors.greenAccent
+                  color: isOverLimit ? Colors.redAccent : Colors.greenAccent
               )
           ),
         ],

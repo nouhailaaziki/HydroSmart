@@ -81,15 +81,58 @@ class WaterProvider with ChangeNotifier {
   }
 
   void _initializeUsageHistory() {
-    // Initialize with some sample data for the last 7 days
+    _usageHistory = [];
+  }
+
+  /// Get last seven days usage from actual meter readings
+  List<UsageRecord> getLastSevenDays() {
+    if (_meterReadings.isEmpty) {
+      final now = DateTime.now();
+      return List.generate(7, (i) {
+        return UsageRecord(
+          date: now.subtract(Duration(days: 6 - i)),
+          usage: 0.0,
+          goal: _weeklyGoal / 7,
+        );
+      });
+    }
+
     final now = DateTime.now();
+    final sevenDaysAgo = now.subtract(const Duration(days: 7));
+
+    final recentReadings = _meterReadings
+        .where((r) => r.timestamp.isAfter(sevenDaysAgo))
+        .toList();
+
+    final Map<String, double> dailyUsage = {};
+
+    for (var i = 0; i < recentReadings.length; i++) {
+      final reading = recentReadings[i];
+      final dateKey = _getDateKey(reading.timestamp);
+
+      if (reading.dailyConsumption != null) {
+        dailyUsage[dateKey] = (dailyUsage[dateKey] ?? 0.0) + reading.dailyConsumption!;
+      }
+    }
+
+    final records = <UsageRecord>[];
     for (int i = 6; i >= 0; i--) {
-      _usageHistory.add(UsageRecord(
-        date: now.subtract(Duration(days: i)),
-        usage: 2.0 + (i * 0.5),
-        goal: 3.0,
+      final date = now.subtract(Duration(days: i));
+      final dateKey = _getDateKey(date);
+      final usage = dailyUsage[dateKey] ?? 0.0;
+
+      records.add(UsageRecord(
+        date: date,
+        usage: usage,
+        goal: _weeklyGoal / 7,
       ));
     }
+
+    return records;
+  }
+
+  String _getDateKey(DateTime date) {
+    return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
   }
 
   void updateGoal(double newGoal) {
@@ -119,7 +162,6 @@ class WaterProvider with ChangeNotifier {
     }
   }
 
-  // Vacation Mode Detection
   void _trackDailyReading(double reading) {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
@@ -142,14 +184,12 @@ class WaterProvider with ChangeNotifier {
           _dailyReadings.length - AppConstants.vacationModeThresholdDays
       );
 
-      // Check if all readings are identical (zero usage)
       final allSame = recentReadings.every(
               (reading) => (reading - recentReadings.first).abs() < 0.1
       );
 
       if (allSame && !_vacationModeActive) {
-        // Vacation mode should be prompted
-        // This will be handled by the UI
+        enableVacationMode();
       }
     }
   }
@@ -164,7 +204,6 @@ class WaterProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  // Points System
   void addPoints(int points) {
     _totalPoints += points;
     notifyListeners();
@@ -199,8 +238,6 @@ class WaterProvider with ChangeNotifier {
   void recordWeeklyGoalCompletion() {
     addPoints(AppConstants.pointsPerWeeklyGoal);
     _unlockAchievement('water_warrior');
-
-    // Reduce next week's goal by 5-10%
     _adjustGoalAfterSuccess();
     notifyListeners();
   }
@@ -248,14 +285,8 @@ class WaterProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  List<UsageRecord> getLastSevenDays() {
-    if (_usageHistory.length < 7) return _usageHistory;
-    return _usageHistory.sublist(_usageHistory.length - 7);
-  }
+  // ========== ONBOARDING & CHALLENGES ==========
 
-  // ========== NEW METHODS FOR ONBOARDING & CHALLENGES ==========
-
-  /// Initialize provider with Hive boxes
   Future<void> initialize() async {
     _readingsBox = await Hive.openBox('meter_readings');
     _challengeBox = await Hive.openBox('challenges');
@@ -266,11 +297,9 @@ class WaterProvider with ChangeNotifier {
     await _loadUserSettings();
     await _notificationService.initialize();
 
-    // Check for inactive user on app open
     await _checkForInactivity();
   }
 
-  /// Load meter readings from storage
   Future<void> _loadMeterReadings() async {
     final readings = _readingsBox?.values.toList() ?? [];
     _meterReadings = readings
@@ -279,7 +308,6 @@ class WaterProvider with ChangeNotifier {
     _meterReadings.sort((a, b) => a.timestamp.compareTo(b.timestamp));
   }
 
-  /// Load current challenge from storage
   Future<void> _loadCurrentChallenge() async {
     final challengeData = _challengeBox?.get('current_challenge');
     if (challengeData != null) {
@@ -287,7 +315,6 @@ class WaterProvider with ChangeNotifier {
     }
   }
 
-  /// Load user settings from storage
   Future<void> _loadUserSettings() async {
     final settingsData = _settingsBox?.get('settings');
     if (settingsData != null) {
@@ -297,36 +324,30 @@ class WaterProvider with ChangeNotifier {
     }
   }
 
-  /// Save meter reading
   Future<void> _saveMeterReading(WaterMeterReading reading) async {
     await _readingsBox?.put(reading.id, reading.toMap());
   }
 
-  /// Save current challenge
   Future<void> _saveCurrentChallenge() async {
     if (_currentChallenge != null) {
       await _challengeBox?.put('current_challenge', _currentChallenge!.toMap());
     }
   }
 
-  /// Save user settings
   Future<void> _saveUserSettings() async {
     if (_userSettings != null) {
       await _settingsBox?.put('settings', _userSettings!.toMap());
     }
   }
 
-  /// Add a meter reading
   Future<void> addMeterReading(double meterValue) async {
     final now = DateTime.now();
     double? dailyConsumption;
 
-    // Calculate daily consumption if we have a previous reading
     if (_meterReadings.isNotEmpty) {
       final lastReading = _meterReadings.last;
       dailyConsumption = meterValue - lastReading.meterValue;
 
-      // Validate the reading
       final validation = DataRecalculationService.validateMeterReading(
         newReading: meterValue,
         previousReading: lastReading.meterValue,
@@ -349,17 +370,13 @@ class WaterProvider with ChangeNotifier {
     _meterReadings.add(reading);
     await _saveMeterReading(reading);
 
-    // Update last reading date in settings
     _userSettings = _userSettings?.copyWith(lastReadingDate: now);
     await _saveUserSettings();
 
-    // Check challenge progress
     await _checkChallengeProgress();
-
     notifyListeners();
   }
 
-  /// Set initial meter reading (during onboarding)
   Future<void> setInitialMeterReading(double meterValue) async {
     final now = DateTime.now();
     final reading = WaterMeterReading(
@@ -376,11 +393,9 @@ class WaterProvider with ChangeNotifier {
       lastReadingDate: now,
     );
     await _saveUserSettings();
-
     notifyListeners();
   }
 
-  /// Set notification time
   Future<void> setNotificationTime(TimeOfDay time) async {
     _userSettings = _userSettings?.copyWith(
       notificationHour: time.hour,
@@ -388,22 +403,16 @@ class WaterProvider with ChangeNotifier {
     );
     await _saveUserSettings();
 
-    // Schedule the notification
     if (_notificationsEnabled) {
       await _notificationService.scheduleDailyMeterReading(time: time);
     }
-
     notifyListeners();
   }
 
-  /// Update household members
   Future<void> updateHouseholdMembers(List<HouseholdMember> members) async {
     _householdMembers = members;
-
-    // Record household change for data integrity
     DataRecalculationService.recordHouseholdChange(members);
 
-    // Recalculate current challenge if active
     if (_currentChallenge != null && _currentChallenge!.isActive) {
       _currentChallenge = DataRecalculationService.recalculateChallenge(
         _currentChallenge!,
@@ -411,11 +420,9 @@ class WaterProvider with ChangeNotifier {
       );
       await _saveCurrentChallenge();
     }
-
     notifyListeners();
   }
 
-  /// Start a new challenge
   Future<void> startChallenge(ChallengeType type) async {
     if (_householdMembers.isEmpty) {
       throw Exception('Please set up your household first');
@@ -433,20 +440,16 @@ class WaterProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  /// Complete current challenge and start a new progressive one
   Future<void> completeCurrentChallenge() async {
     if (_currentChallenge == null || !_currentChallenge!.isActive) {
       return;
     }
 
-    // Mark as completed
     _currentChallenge = ChallengeService.completeChallenge(_currentChallenge!);
     await _saveCurrentChallenge();
 
-    // Award points
     addPoints(AppConstants.pointsPerWeeklyGoal * 2);
 
-    // Create progressive challenge
     _currentChallenge = ChallengeService.createProgressiveChallenge(
       previousChallenge: _currentChallenge!,
       householdMembers: _householdMembers,
@@ -456,7 +459,28 @@ class WaterProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  /// Pause current challenge
+  Future<void> failCurrentChallenge() async {
+    if (_currentChallenge == null || !_currentChallenge!.isActive) {
+      return;
+    }
+
+    final failedChallenge = _currentChallenge!;
+    _currentChallenge = ChallengeService.completeChallenge(failedChallenge).copyWith(
+      isCompleted: false,
+    );
+    await _saveCurrentChallenge();
+
+    _currentChallenge = ChallengeService.createChallenge(
+      type: failedChallenge.type,
+      householdMembers: _householdMembers,
+      customReduction: failedChallenge.reductionPercentage,
+      previousCompletions: failedChallenge.completionCount,
+    );
+
+    await _saveCurrentChallenge();
+    notifyListeners();
+  }
+
   Future<void> pauseChallenge() async {
     if (_currentChallenge == null || !_currentChallenge!.isActive) {
       return;
@@ -465,17 +489,14 @@ class WaterProvider with ChangeNotifier {
     _currentChallenge = ChallengeService.pauseChallenge(_currentChallenge!);
     await _saveCurrentChallenge();
 
-    // Switch to motivational notifications
     if (_userSettings != null) {
       await _notificationService.scheduleMotivationalNotification(
         time: _userSettings!.notificationTime,
       );
     }
-
     notifyListeners();
   }
 
-  /// Resume paused challenge
   Future<void> resumeChallenge() async {
     if (_currentChallenge == null || !_currentChallenge!.isPaused) {
       return;
@@ -484,17 +505,14 @@ class WaterProvider with ChangeNotifier {
     _currentChallenge = ChallengeService.resumeChallenge(_currentChallenge!);
     await _saveCurrentChallenge();
 
-    // Switch back to meter reading notifications
     if (_userSettings != null) {
       await _notificationService.scheduleDailyMeterReading(
         time: _userSettings!.notificationTime,
       );
     }
-
     notifyListeners();
   }
 
-  /// Check challenge progress after adding a reading
   Future<void> _checkChallengeProgress() async {
     if (_currentChallenge == null ||
         !_currentChallenge!.isActive ||
@@ -502,16 +520,22 @@ class WaterProvider with ChangeNotifier {
       return;
     }
 
-    // Calculate consumption for challenge period
+    if (_currentChallenge!.endDate == null) return;
+
+    final now = DateTime.now();
+    if (now.isBefore(_currentChallenge!.endDate!)) {
+      return;
+    }
+
     final consumption = _calculateChallengeConsumption();
 
-    // Check if challenge should be auto-completed
-    if (ChallengeService.shouldAutoComplete(_currentChallenge!, consumption)) {
+    if (consumption <= _currentChallenge!.targetConsumption) {
       await completeCurrentChallenge();
+    } else {
+      await failCurrentChallenge();
     }
   }
 
-  /// Calculate consumption for current challenge period
   double _calculateChallengeConsumption() {
     if (_currentChallenge == null || _meterReadings.length < 2) {
       return 0.0;
@@ -529,7 +553,6 @@ class WaterProvider with ChangeNotifier {
         .reduce((a, b) => a + b);
   }
 
-  /// Check for inactive user (gap in app usage)
   Future<void> _checkForInactivity() async {
     if (_userSettings?.lastAppOpenDate == null) {
       _userSettings = _userSettings?.copyWith(lastAppOpenDate: DateTime.now());
@@ -540,24 +563,19 @@ class WaterProvider with ChangeNotifier {
     final daysSinceLastOpen =
         DateTime.now().difference(_userSettings!.lastAppOpenDate!).inDays;
 
-    // Update last app open date
     _userSettings = _userSettings?.copyWith(lastAppOpenDate: DateTime.now());
     await _saveUserSettings();
 
-    // If more than 1 day gap, user needs to provide catch-up data
     if (daysSinceLastOpen > 1) {
-      // This will be handled by UI showing WelcomeBackScreen
       debugPrint('User inactive for $daysSinceLastOpen days');
     }
   }
 
-  /// Get days since last app open
   int getDaysSinceLastOpen() {
     if (_userSettings?.lastAppOpenDate == null) return 0;
     return DateTime.now().difference(_userSettings!.lastAppOpenDate!).inDays;
   }
 
-  /// Handle gap in readings (when user was inactive)
   Future<void> handleReadingGap({
     required double currentMeterValue,
     bool markAsAway = false,
@@ -571,7 +589,6 @@ class WaterProvider with ChangeNotifier {
     final gapDays = DateTime.now().difference(lastReading.timestamp).inDays;
 
     if (gapDays <= 1) {
-      // No significant gap
       await addMeterReading(currentMeterValue);
       return;
     }
@@ -579,13 +596,11 @@ class WaterProvider with ChangeNotifier {
     final totalConsumption = currentMeterValue - lastReading.meterValue;
 
     if (markAsAway) {
-      // Pause challenge during this period
       if (_currentChallenge != null && _currentChallenge!.isActive) {
         await pauseChallenge();
       }
     }
 
-    // Distribute consumption across gap days
     final distributedReadings = DataRecalculationService.distributeGapConsumption(
       totalConsumption: totalConsumption,
       startDate: lastReading.timestamp,
@@ -593,7 +608,6 @@ class WaterProvider with ChangeNotifier {
       lastMeterValue: lastReading.meterValue,
     );
 
-    // Save distributed readings
     for (var reading in distributedReadings) {
       _meterReadings.add(reading);
       await _saveMeterReading(reading);
@@ -602,17 +616,14 @@ class WaterProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  /// Get household water profile
   Map<String, dynamic> getHouseholdProfile() {
     return ConsumptionEstimationService.getHouseholdProfile(_householdMembers);
   }
 
-  /// Get estimated daily consumption
   double getEstimatedDailyConsumption() {
     return ConsumptionEstimationService.estimateDailyConsumption(_householdMembers);
   }
 
-  /// Get challenge progress percentage
   double getChallengeProgress() {
     if (_currentChallenge == null || !_currentChallenge!.isActive) {
       return 0.0;
@@ -621,13 +632,11 @@ class WaterProvider with ChangeNotifier {
     final consumption = _calculateChallengeConsumption();
     final target = _currentChallenge!.targetConsumption;
 
-    // Guard against division by zero
     if (target == 0.0) return 0.0;
 
     return (consumption / target).clamp(0.0, 1.0);
   }
 
-  /// Clear all data (for testing or reset)
   Future<void> clearAllData() async {
     await _readingsBox?.clear();
     await _challengeBox?.clear();

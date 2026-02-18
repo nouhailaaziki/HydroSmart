@@ -407,3 +407,20 @@ class AppLocalizations {
   String get goodEvening => translate('good_evening');
   String get goodNight => translate('good_night');
 }
+
+class AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
+  const AppLocalizationsDelegate();
+
+  @override
+  bool isSupported(Locale locale) {
+    return ['en', 'ar', 'fr'].contains(locale.languageCode);
+  }
+
+  @override
+  Future<AppLocalizations> load(Locale locale) async {
+    return AppLocalizations(locale.languageCode);
+  }
+
+  @override
+  bool shouldReload(AppLocalizationsDelegate old) => false;
+}

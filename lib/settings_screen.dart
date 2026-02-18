@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'providers/water_provider.dart';
 import 'providers/auth_provider.dart';
 import 'providers/language_provider.dart';
+import 'providers/theme_provider.dart';
 import 'screens/profile_screen.dart';
 import 'screens/household_settings_screen.dart';
 import 'screens/challenge_management_screen.dart';
@@ -18,12 +19,11 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  bool _darkModeEnabled = true;
-
   @override
   Widget build(BuildContext context) {
     final waterProvider = Provider.of<WaterProvider>(context);
     final languageProvider = Provider.of<LanguageProvider>(context);
+    final themeProvider = Provider.of<ThemeProvider>(context);
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(20.0),
@@ -83,10 +83,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
           // Theme Mode
           _buildSectionHeader("Appearance"),
           const SizedBox(height: 12),
-          _buildToggleOption("Dark Mode", _darkModeEnabled, (value) {
-            setState(() {
-              _darkModeEnabled = value;
-            });
+          _buildToggleOption("Dark Mode", themeProvider.isDarkMode, (value) {
+            themeProvider.setTheme(value);
           }),
           const SizedBox(height: 24),
 

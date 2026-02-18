@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'dashboard_screen.dart';
 import 'ai_assistant_screen.dart';
 import 'settings_screen.dart';
@@ -7,6 +8,8 @@ import 'providers/water_provider.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'providers/auth_provider.dart';
 import 'providers/language_provider.dart';
+import 'providers/theme_provider.dart';
+import 'l10n/app_localizations.dart';
 import 'screens/login_screen.dart';
 import 'screens/onboarding/onboarding_flow_screen.dart';
 import 'screens/daily_meter_input_screen.dart';
@@ -43,6 +46,7 @@ Future<void> main() async {
         ChangeNotifierProvider.value(value: waterProvider),
         ChangeNotifierProvider.value(value: authProvider),
         ChangeNotifierProvider(create: (_) => LanguageProvider()),
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
       ],
       child: const HydrosmartApp(),
     ),
@@ -58,6 +62,7 @@ class HydrosmartApp extends StatelessWidget {
     final isAuthenticated = authProvider.isAuthenticated;
     final hasCompletedOnboarding = authProvider.hasCompletedOnboarding;
     final languageProvider = context.watch<LanguageProvider>();
+    final themeProvider = context.watch<ThemeProvider>();
 
     Widget home;
     if (!isAuthenticated) {
@@ -71,8 +76,21 @@ class HydrosmartApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Hydrosmart',
-      theme: AppTheme.darkTheme,
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: themeProvider.themeMode,
       locale: languageProvider.currentLocale,
+      localizationsDelegates: const [
+        AppLocalizationsDelegate(),
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('en', ''),
+        Locale('ar', ''),
+        Locale('fr', ''),
+      ],
       home: home,
     );
   }

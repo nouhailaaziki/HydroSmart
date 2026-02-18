@@ -67,67 +67,71 @@ class _OnboardingChallengeScreenState extends State<OnboardingChallengeScreen> {
                     color: Colors.white.withOpacity(0.7),
                   ),
                 ),
-                const SizedBox(height: 48),
+                const SizedBox(height: 24),
                 Expanded(
-                  child: Column(
-                    children: [
-                      _buildChallengeCard(
-                        type: ChallengeType.weekly,
-                        title: 'Weekly Challenge',
-                        description: '7-day water saving goal',
-                        icon: Icons.calendar_view_week,
-                        duration: '1 week',
-                      ),
-                      const SizedBox(height: 16),
-                      _buildChallengeCard(
-                        type: ChallengeType.monthly,
-                        title: 'Monthly Challenge',
-                        description: '30-day water saving goal',
-                        icon: Icons.calendar_month,
-                        duration: '1 month',
-                      ),
-                      const SizedBox(height: 24),
-                      Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: Colors.cyanAccent.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: Colors.cyanAccent.withOpacity(0.3),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        _buildChallengeCard(
+                          type: ChallengeType.weekly,
+                          title: 'Weekly Challenge',
+                          description: '7-day water saving goal',
+                          icon: Icons.calendar_view_week,
+                          duration: '1 week',
+                        ),
+                        const SizedBox(height: 16),
+                        _buildChallengeCard(
+                          type: ChallengeType.monthly,
+                          title: 'Monthly Challenge',
+                          description: '30-day water saving goal',
+                          icon: Icons.calendar_month,
+                          duration: '1 month',
+                        ),
+                        const SizedBox(height: 24),
+                        Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: Colors.cyanAccent.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: Colors.cyanAccent.withOpacity(0.3),
+                            ),
+                          ),
+                          child: Column(
+                            children: [
+                              const Icon(
+                                Icons.auto_awesome,
+                                color: Colors.cyanAccent,
+                                size: 32,
+                              ),
+                              const SizedBox(height: 12),
+                              Text(
+                                'Progressive Challenges',
+                                style: TextStyle(
+                                  color: Colors.white.withOpacity(0.9),
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Each time you complete a challenge, your next goal will be slightly more ambitious, helping you save even more water!',
+                                style: TextStyle(
+                                  color: Colors.white.withOpacity(0.7),
+                                  fontSize: 13,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
                           ),
                         ),
-                        child: Column(
-                          children: [
-                            const Icon(
-                              Icons.auto_awesome,
-                              color: Colors.cyanAccent,
-                              size: 32,
-                            ),
-                            const SizedBox(height: 12),
-                            Text(
-                              'Progressive Challenges',
-                              style: TextStyle(
-                                color: Colors.white.withOpacity(0.9),
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              'Each time you complete a challenge, your next goal will be slightly more ambitious, helping you save even more water!',
-                              style: TextStyle(
-                                color: Colors.white.withOpacity(0.7),
-                                fontSize: 13,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
+                        const SizedBox(height: 16),
+                      ],
+                    ),
                   ),
                 ),
+                const SizedBox(height: 16),
                 SizedBox(
                   width: double.infinity,
                   height: 56,

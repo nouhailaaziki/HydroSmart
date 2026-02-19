@@ -83,10 +83,10 @@ class ChallengeManagementScreen extends StatelessWidget {
   }
 
   Widget _buildChallengeView(
-    BuildContext context,
-    Challenge challenge,
-    WaterProvider waterProvider,
-  ) {
+      BuildContext context,
+      Challenge challenge,
+      WaterProvider waterProvider,
+      ) {
     final progress = waterProvider.getChallengeProgress();
     final consumption = waterProvider.meterReadings
         .where((r) => r.timestamp.isAfter(challenge.startDate))
@@ -241,6 +241,9 @@ class ChallengeManagementScreen extends StatelessWidget {
             '${challenge.completionCount}',
             Icons.check_circle_outline,
           ),
+          const SizedBox(height: 12),
+          // Daily Average Display
+          _buildDailyAverageCard(waterProvider),
           const SizedBox(height: 24),
 
           // Actions
@@ -332,6 +335,60 @@ class ChallengeManagementScreen extends StatelessWidget {
               fontWeight: FontWeight.bold,
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDailyAverageCard(WaterProvider waterProvider) {
+    final hasData = waterProvider.hasHistoricalDataForAverage();
+    final dailyAvg = hasData
+        ? waterProvider.getDailyAverageConsumption().toStringAsFixed(2)
+        : '0.00';
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.water_drop, color: Colors.cyanAccent),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  'Daily Average',
+                  style: TextStyle(
+                    color: Colors.white.withOpacity(0.7),
+                    fontSize: 14,
+                  ),
+                ),
+              ),
+              Text(
+                '$dailyAvg m³',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+          if (!hasData) ...[
+            const SizedBox(height: 8),
+            Text(
+              waterProvider.getDailyAverageMessage(),
+              style: TextStyle(
+                color: Colors.yellowAccent.withOpacity(0.8),
+                fontSize: 12,
+                fontStyle: FontStyle.italic,
+              ),
+            ),
+          ],
         ],
       ),
     );

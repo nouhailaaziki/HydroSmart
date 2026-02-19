@@ -344,6 +344,7 @@ class WaterProvider with ChangeNotifier {
     final now = DateTime.now();
     double? dailyConsumption;
 
+    // Validate the reading first (quick operation)
     if (_meterReadings.isNotEmpty) {
       final lastReading = _meterReadings.last;
       dailyConsumption = meterValue - lastReading.meterValue;
@@ -360,6 +361,7 @@ class WaterProvider with ChangeNotifier {
       }
     }
 
+    // Create and add the reading (in-memory operation, fast)
     final reading = WaterMeterReading(
       id: 'reading_${now.millisecondsSinceEpoch}',
       timestamp: now,
@@ -368,13 +370,24 @@ class WaterProvider with ChangeNotifier {
     );
 
     _meterReadings.add(reading);
-    await _saveMeterReading(reading);
 
+    // Update settings before saving
     _userSettings = _userSettings?.copyWith(lastReadingDate: now);
-    await _saveUserSettings();
 
-    await _checkChallengeProgress();
+    // Update UI immediately before heavy I/O operations
     notifyListeners();
+
+    // Perform I/O operations in parallel where possible
+    await Future.wait([
+      _saveMeterReading(reading),
+      _saveUserSettings(),
+    ]);
+
+    // Run challenge progress check asynchronously in the background
+    // This doesn't block the UI response
+    _checkChallengeProgress().catchError((e, stackTrace) {
+      debugPrint('Error checking challenge progress: $e\n$stackTrace');
+    });
   }
 
   Future<void> setInitialMeterReading(double meterValue) async {
@@ -635,6 +648,65 @@ class WaterProvider with ChangeNotifier {
     if (target == 0.0) return 0.0;
 
     return (consumption / target).clamp(0.0, 1.0);
+  }
+
+  /// Calculate daily average consumption for the current challenge period
+  /// Returns 0.0 if no challenge is active or insufficient data
+  /// Formula: (last reading - first reading) / elapsed days
+  double getDailyAverageConsumption() {
+    if (_currentChallenge == null || !_currentChallenge!.isActive) {
+      return 0.0;
+    }
+
+    final startDate = _currentChallenge!.startDate;
+    final readingsInPeriod = _meterReadings
+        .where((r) => r.timestamp.isAfter(startDate) ||
+        r.timestamp.isAtSameMomentAs(startDate))
+        .toList();
+
+    // Need at least 2 readings to calculate average
+    if (readingsInPeriod.length < 2) {
+      return 0.0;
+    }
+
+    final firstReading = readingsInPeriod.first.meterValue;
+    final lastReading = readingsInPeriod.last.meterValue;
+    final totalConsumption = lastReading - firstReading;
+
+    // Calculate actual elapsed days between first and last reading
+    final elapsedDays = readingsInPeriod.last.timestamp
+        .difference(readingsInPeriod.first.timestamp)
+        .inDays;
+
+    // If readings are on the same day, treat as 1 day minimum
+    final divisor = elapsedDays > 0 ? elapsedDays.toDouble() : 1.0;
+
+    return totalConsumption / divisor;
+  }
+
+  /// Check if there's sufficient historical data for daily average
+  /// Returns true if there are at least 2 readings in the challenge period
+  bool hasHistoricalDataForAverage() {
+    if (_currentChallenge == null || !_currentChallenge!.isActive) {
+      return false;
+    }
+
+    final startDate = _currentChallenge!.startDate;
+    final readingsInPeriod = _meterReadings
+        .where((r) => r.timestamp.isAfter(startDate) ||
+        r.timestamp.isAtSameMomentAs(startDate))
+        .toList();
+
+    return readingsInPeriod.length >= 2;
+  }
+
+  /// Get message for daily average display when no historical data is available
+  String getDailyAverageMessage() {
+    if (_currentChallenge == null || !_currentChallenge!.isActive) {
+      return 'No active challenge';
+    }
+
+    return 'Daily average will be available after recording at least 2 meter readings.';
   }
 
   Future<void> clearAllData() async {

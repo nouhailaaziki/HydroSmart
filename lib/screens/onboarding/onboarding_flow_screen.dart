@@ -4,6 +4,7 @@ import '../../providers/auth_provider.dart';
 import '../../providers/water_provider.dart';
 import '../../models/challenge_model.dart';
 import '../../models/household_member_model.dart';
+import '../../main.dart' show MainNavigationShell;
 import 'onboarding_name_screen.dart';
 import 'onboarding_age_screen.dart';
 import 'onboarding_household_screen.dart';
@@ -23,6 +24,21 @@ class _OnboardingFlowScreenState extends State<OnboardingFlowScreen> {
   List<HouseholdMember>? _householdMembers;
   double? _initialMeterReading;
   TimeOfDay? _notificationTime;
+
+  // Delay to allow SnackBar to be visible before navigation
+  static const Duration _navigationDelay = Duration(milliseconds: 500);
+
+  // Helper method to navigate to home screen
+  Future<void> _navigateToHome() async {
+    await Future.delayed(_navigationDelay);
+    if (mounted) {
+      // Use pushAndRemoveUntil to prevent back navigation to onboarding
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (context) => const MainNavigationShell()),
+            (route) => false,
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -85,7 +101,8 @@ class _OnboardingFlowScreenState extends State<OnboardingFlowScreen> {
 
   Future<void> _completeOnboarding(ChallengeType challengeType) async {
     bool loadingShown = false;
-    
+    bool hasErrors = false;
+
     try {
       // Show loading
       if (mounted) {
@@ -113,7 +130,7 @@ class _OnboardingFlowScreenState extends State<OnboardingFlowScreen> {
         );
       } catch (e) {
         debugPrint('Error completing auth onboarding: $e');
-        // Continue anyway as this is not critical
+        hasErrors = true;
       }
 
       // Set up water tracking
@@ -121,19 +138,21 @@ class _OnboardingFlowScreenState extends State<OnboardingFlowScreen> {
         await waterProvider.setInitialMeterReading(_initialMeterReading!);
       } catch (e) {
         debugPrint('Error setting initial meter reading: $e');
+        hasErrors = true;
       }
 
       try {
         await waterProvider.setNotificationTime(_notificationTime!);
       } catch (e) {
         debugPrint('Error setting notification time: $e');
-        // Continue anyway
+        hasErrors = true;
       }
 
       try {
         await waterProvider.updateHouseholdMembers(_householdMembers!);
       } catch (e) {
         debugPrint('Error updating household members: $e');
+        hasErrors = true;
       }
 
       // Start the challenge
@@ -141,72 +160,63 @@ class _OnboardingFlowScreenState extends State<OnboardingFlowScreen> {
         await waterProvider.startChallenge(challengeType);
       } catch (e) {
         debugPrint('Error starting challenge: $e');
-        // Continue anyway
+        hasErrors = true;
       }
 
       // Close loading dialog
       if (mounted && loadingShown) {
         Navigator.of(context).pop();
         loadingShown = false;
+      }
 
-        // Show success message
-        await showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (context) => AlertDialog(
-            backgroundColor: const Color(0xFF001529),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
+      // Show appropriate message
+      if (mounted) {
+        if (hasErrors) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Setup completed with some errors. You can continue using the app.'),
+              backgroundColor: Colors.orange,
+              duration: Duration(seconds: 3),
             ),
-            title: const Row(
-              children: [
-                Icon(Icons.celebration, color: Colors.cyanAccent, size: 32),
-                SizedBox(width: 12),
-                Text(
-                  'All Set!',
-                  style: TextStyle(color: Colors.white),
-                ),
-              ],
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Welcome to Hydrosmart! 🎉'),
+              backgroundColor: Colors.green,
+              duration: Duration(seconds: 2),
             ),
-            content: Text(
-              'Your water-saving journey begins now. Let\'s make every drop count!',
-              style: TextStyle(
-                color: Colors.white.withOpacity(0.9),
-                fontSize: 16,
-              ),
-            ),
-            actions: [
-              ElevatedButton(
-                onPressed: () => Navigator.of(context).pop(),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.cyanAccent,
-                  foregroundColor: Colors.black,
-                ),
-                child: const Text('Let\'s Go!'),
-              ),
-            ],
-          ),
-        );
+          );
+        }
+      }
+
+      // **CRITICAL FIX**: Navigate to home screen after short delay
+      if (mounted) {
+        await _navigateToHome();
       }
     } catch (e) {
       debugPrint('Error in _completeOnboarding: $e');
-      
+
       // Close loading dialog if open
       if (mounted && loadingShown) {
         try {
           Navigator.of(context).pop();
+          loadingShown = false;
         } catch (e) {
           debugPrint('Error closing loading dialog: $e');
         }
+      }
 
-        // Show error but still allow navigation to continue
+      // Show error message
+      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Text('Setup completed with some errors. You can continue using the app.'),
             backgroundColor: Colors.orange,
-            duration: const Duration(seconds: 4),
+            duration: Duration(seconds: 4),
           ),
         );
+        await _navigateToHome();
       }
     }
   }

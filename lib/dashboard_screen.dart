@@ -6,9 +6,12 @@ import 'package:provider/provider.dart';
 import 'providers/water_provider.dart';
 import 'providers/auth_provider.dart';
 import 'models/challenge_model.dart';
+import 'models/usage_record_model.dart';
 import 'screens/achievements_screen.dart';
 
 class HydrosmartDashboard extends StatelessWidget {
+  static const double _yAxisInterval = 250.0;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -89,7 +92,7 @@ class HydrosmartDashboard extends StatelessWidget {
     // Calculate current period consumption from meter readings
     double currentPeriodConsumption = 0.0;
     String periodLabel = "Weekly Progress";
-    
+
     if (waterData.currentChallenge != null && waterData.currentChallenge!.isActive) {
       // Use challenge-based progress
       final challenge = waterData.currentChallenge!;
@@ -97,9 +100,9 @@ class HydrosmartDashboard extends StatelessWidget {
           .where((r) => r.timestamp.isAfter(challenge.startDate))
           .map((r) => r.dailyConsumption ?? 0.0)
           .fold(0.0, (sum, consumption) => sum + consumption);
-      
-      periodLabel = challenge.type == ChallengeType.weekly 
-          ? "Weekly Progress" 
+
+      periodLabel = challenge.type == ChallengeType.weekly
+          ? "Weekly Progress"
           : "Monthly Progress";
     } else {
       // Fallback to weekly calculation
@@ -142,10 +145,19 @@ class HydrosmartDashboard extends StatelessWidget {
     );
   }
 
+  double _calculateMaxYAxisValue(List<UsageRecord> usageRecords) {
+    if (usageRecords.isEmpty) {
+      return 100;
+    }
+    final maxUsage = usageRecords.fold<double>(0, (max, record) => record.usage > max ? record.usage : max);
+    return (maxUsage / _yAxisInterval).ceil() * _yAxisInterval + _yAxisInterval;
+  }
+
   Widget _buildUsageChart() {
     return Consumer<WaterProvider>(
       builder: (context, waterProvider, _) {
         final last7Days = waterProvider.getLastSevenDays();
+        final maxY = _calculateMaxYAxisValue(last7Days);
 
         return Container(
           height: 220,
@@ -191,7 +203,7 @@ class HydrosmartDashboard extends StatelessWidget {
                     gridData: FlGridData(
                       show: true,
                       drawVerticalLine: false,
-                      horizontalInterval: 1,
+                      horizontalInterval: _yAxisInterval,
                       getDrawingHorizontalLine: (value) {
                         return FlLine(
                           color: Colors.white.withOpacity(0.1),
@@ -234,11 +246,11 @@ class HydrosmartDashboard extends StatelessWidget {
                       leftTitles: AxisTitles(
                         sideTitles: SideTitles(
                           showTitles: true,
-                          reservedSize: 30,
-                          interval: 1,
+                          reservedSize: 40,
+                          interval: _yAxisInterval,
                           getTitlesWidget: (value, meta) {
                             return Text(
-                              value.toInt().toString(),
+                              '${value.toInt()}L',
                               style: TextStyle(
                                 color: Colors.white54,
                                 fontSize: 10,
@@ -252,7 +264,7 @@ class HydrosmartDashboard extends StatelessWidget {
                     minX: 0,
                     maxX: (last7Days.length - 1).toDouble(),
                     minY: 0,
-                    maxY: last7Days.isEmpty ? 5 : last7Days.map((r) => r.usage).reduce((a, b) => a > b ? a : b) + 1,
+                    maxY: maxY,
                     lineBarsData: [
                       LineChartBarData(
                         spots: last7Days.asMap().entries.map((entry) {
@@ -300,6 +312,16 @@ class HydrosmartDashboard extends StatelessWidget {
 
   Widget _buildQuickStats(BuildContext context) {
     final waterData = Provider.of<WaterProvider>(context);
+
+    // Calculate daily average display
+    String dailyAvgDisplay;
+    if (waterData.hasHistoricalDataForAverage()) {
+      final avgConsumption = waterData.getDailyAverageConsumption();
+      dailyAvgDisplay = '${avgConsumption.toStringAsFixed(2)}m³';
+    } else {
+      dailyAvgDisplay = '0.00m³';
+    }
+
     return Column(
       children: [
         Row(
@@ -311,7 +333,7 @@ class HydrosmartDashboard extends StatelessWidget {
                 waterData.leakDetectionEnabled ? (waterData.isLeakDetected ? Colors.redAccent : Colors.greenAccent) : Colors.grey
             )),
             SizedBox(width: 15),
-            Expanded(child: _statTile("2.1L", "Daily Avg", Icons.water_drop, Colors.blueAccent)),
+            Expanded(child: _statTile(dailyAvgDisplay, "Daily Avg", Icons.water_drop, Colors.blueAccent)),
           ],
         ),
         SizedBox(height: 15),

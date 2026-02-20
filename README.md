@@ -20,6 +20,7 @@
 - [Key Features](#key-features)
 - [Core Concepts](#core-concepts)
 - [Architecture](#architecture)
+- [Technologies Used](technologies-used)
 - [Getting Started](#getting-started)
 - [Project Structure](#project-structure)
 - [Localization](#localization)
@@ -65,13 +66,6 @@ The app combines real-time monitoring, gamification, and intelligent insights to
   - **AI Friend**: Have 50 AI conversations
 - **Streak Tracking**: Monitor consecutive days of meeting goals
 - **Leaderboard Ready**: Infrastructure for competitive features
-
-### AI Assistant
-- **Powered by Google Gemini AI**: Intelligent water-saving recommendations
-- **Context-Aware Responses**: Personalized advice based on your usage patterns
-- **Multi-language Support**: Conversations in English, Arabic, and French
-- **Chat History**: Persistent conversation storage with Hive
-- **Markdown Rendering**: Rich text responses with formatting support
 
 ### Goal Setting & Challenges
 - **Weekly/Monthly Goals**: Set personalized water conservation targets
@@ -224,7 +218,7 @@ HydroSmart follows the **Provider Pattern** for state management:
 - Flutter SDK: `^3.11.0`
 - Dart SDK: `^3.11.0`
 - Android Studio / Xcode (for mobile development)
-- Google Gemini API Key
+- Groq Gemini API Key
 
 ### Installation
 
@@ -242,7 +236,7 @@ HydroSmart follows the **Provider Pattern** for state management:
 3. **Set up environment variables**
    Create a `.env` file in the root directory:
    ```env
-   GEMINI_API_KEY=your_gemini_api_key_here
+   GROQ_API_KEY=your_groq_api_key_here
    ```
 
 4. **Run the app**
@@ -257,11 +251,6 @@ HydroSmart follows the **Provider Pattern** for state management:
 flutter build apk --release
 ```
 
-**iOS:**
-```bash
-flutter build ios --release
-```
-
 ---
 
 ## Project Structure
@@ -271,7 +260,7 @@ hydrosmart/
 ├── lib/
 │   ├── main.dart                    # App entry point
 │   ├── dashboard_screen.dart        # Main dashboard
-│   ��── ai_assistant_screen.dart     # AI chat interface
+│   ├── ai_assistant_screen.dart     # AI chat interface
 │   ├── settings_screen.dart         # Settings page
 │   │
 │   ├── models/                      # Data models
@@ -316,7 +305,6 @@ hydrosmart/
 │       └── constants.dart
 │
 ├── android/                         # Android-specific code
-├── ios/                            # iOS-specific code
 ├── web/                            # Web-specific code
 ├── test/                           # Unit & widget tests
 ├── .env                            # Environment variables
@@ -326,7 +314,7 @@ hydrosmart/
 
 ---
 
-## 🛠️ Technologies Used
+## Technologies Used
 
 ### Framework & Language
 - **Flutter**: Cross-platform UI framework
@@ -346,7 +334,7 @@ hydrosmart/
 - **Flutter Markdown**: Markdown rendering for AI responses
 
 ### AI Integration
-- **Google Generative AI**: Gemini API for conversational AI
+- **Groq Generative AI**: Gemini API for conversational AI
 - **HTTP**: API communication
 
 ### Localization
@@ -388,7 +376,7 @@ All translations are managed in `lib/l10n/app_localizations.dart`. To add a new 
 
 ## Screenshots
 
-> *Note: Add your app screenshots here showing the dashboard, AI chat, achievements, and settings screens.*
+in progress...
 
 ---
 
@@ -424,3 +412,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 [Report Bug](https://github.com/nouhailaaziki/HydroSmart/issues) · [Request Feature](https://github.com/nouhailaaziki/HydroSmart/issues)
 
 </div>
+

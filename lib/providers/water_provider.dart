@@ -142,7 +142,12 @@ class WaterProvider with ChangeNotifier {
 
   void toggleLeakDetection(bool value) {
     _leakDetectionEnabled = value;
-    if (!value) _isLeakDetected = false;
+    if (!value) {
+      _isLeakDetected = false;
+    } else if (_meterReadings.isNotEmpty) {
+      // Re-check leak status based on latest reading
+      _checkLeakFromMeterReading(_meterReadings.last.dailyConsumption);
+    }
     notifyListeners();
   }
 
@@ -157,8 +162,29 @@ class WaterProvider with ChangeNotifier {
         _isLeakDetected = true;
         _unlockAchievement('leak_detective');
       }
-    } else if (!_leakDetectionEnabled) {
+    } else if (!_leakDetectionEnabled || usage <= 25.0) {
       _isLeakDetected = false;
+    }
+  }
+
+  /// Check for potential leaks based on the latest meter reading's daily consumption.
+  void _checkLeakFromMeterReading(double? dailyConsumption) {
+    if (!_leakDetectionEnabled) {
+      _isLeakDetected = false;
+      return;
+    }
+    if (dailyConsumption != null && dailyConsumption > 0) {
+      // Estimate person-adjusted threshold: 150 L/person/day is a common high threshold
+      final membersCount = _householdMembers.isNotEmpty ? _householdMembers.length : 1;
+      final leakThreshold = membersCount * 150.0;
+      if (dailyConsumption > leakThreshold) {
+        if (!_isLeakDetected) {
+          _isLeakDetected = true;
+          _unlockAchievement('leak_detective');
+        }
+      } else {
+        _isLeakDetected = false;
+      }
     }
   }
 
@@ -295,7 +321,11 @@ class WaterProvider with ChangeNotifier {
     await _loadMeterReadings();
     await _loadCurrentChallenge();
     await _loadUserSettings();
-    await _notificationService.initialize();
+    try {
+      await _notificationService.initialize();
+    } catch (e) {
+      debugPrint('Error initializing notification service: $e');
+    }
 
     await _checkForInactivity();
   }
@@ -374,6 +404,9 @@ class WaterProvider with ChangeNotifier {
     // Update settings before saving
     _userSettings = _userSettings?.copyWith(lastReadingDate: now);
 
+    // Check for leak based on actual daily consumption
+    _checkLeakFromMeterReading(dailyConsumption);
+
     // Update UI immediately before heavy I/O operations
     notifyListeners();
 
@@ -417,7 +450,11 @@ class WaterProvider with ChangeNotifier {
     await _saveUserSettings();
 
     if (_notificationsEnabled) {
-      await _notificationService.scheduleDailyMeterReading(time: time);
+      try {
+        await _notificationService.scheduleDailyMeterReading(time: time);
+      } catch (e) {
+        debugPrint('Error scheduling daily meter reading notification: $e');
+      }
     }
     notifyListeners();
   }
@@ -503,9 +540,13 @@ class WaterProvider with ChangeNotifier {
     await _saveCurrentChallenge();
 
     if (_userSettings != null) {
-      await _notificationService.scheduleMotivationalNotification(
-        time: _userSettings!.notificationTime,
-      );
+      try {
+        await _notificationService.scheduleMotivationalNotification(
+          time: _userSettings!.notificationTime,
+        );
+      } catch (e) {
+        debugPrint('Error scheduling motivational notification: $e');
+      }
     }
     notifyListeners();
   }
@@ -519,9 +560,13 @@ class WaterProvider with ChangeNotifier {
     await _saveCurrentChallenge();
 
     if (_userSettings != null) {
-      await _notificationService.scheduleDailyMeterReading(
-        time: _userSettings!.notificationTime,
-      );
+      try {
+        await _notificationService.scheduleDailyMeterReading(
+          time: _userSettings!.notificationTime,
+        );
+      } catch (e) {
+        debugPrint('Error scheduling daily meter reading notification: $e');
+      }
     }
     notifyListeners();
   }

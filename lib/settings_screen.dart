@@ -5,13 +5,15 @@ import 'package:provider/provider.dart';
 import 'providers/water_provider.dart';
 import 'providers/auth_provider.dart';
 import 'providers/language_provider.dart';
-import 'providers/theme_provider.dart';
 import 'screens/profile_screen.dart';
 import 'screens/household_settings_screen.dart';
 import 'screens/challenge_management_screen.dart';
+import 'screens/privacy_policy_screen.dart';
+import 'screens/terms_of_service_screen.dart';
 import 'theme/app_colors.dart';
 import 'theme/app_text_styles.dart';
 import 'utils/constants.dart';
+import 'l10n/app_localizations.dart';
 
 class SettingsScreen extends StatefulWidget {
   @override
@@ -23,27 +25,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     final waterProvider = Provider.of<WaterProvider>(context);
     final languageProvider = Provider.of<LanguageProvider>(context);
-    final themeProvider = Provider.of<ThemeProvider>(context);
+    final loc = AppLocalizations.of(context);
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(20.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("Settings", style: GoogleFonts.poppins(fontSize: 28, fontWeight: FontWeight.bold)),
+          Text(loc.translate('settings'), style: GoogleFonts.poppins(fontSize: 28, fontWeight: FontWeight.bold)),
           const SizedBox(height: 30),
 
-          // Weekly Goal Setter
-          _buildGoalSetter(waterProvider),
-          const SizedBox(height: 24),
-
           // New Features Section
-          _buildSectionHeader("Water Tracking"),
+          _buildSectionHeader(loc.translate('water_tracking')),
           const SizedBox(height: 12),
           _buildNavigationTile(
-            "Household Members",
+            loc.translate('household_members'),
             Icons.family_restroom,
-            () {
+                () {
               Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (context) => const HouseholdSettingsScreen(),
@@ -53,9 +51,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
           const SizedBox(height: 12),
           _buildNavigationTile(
-            "Challenge Management",
+            loc.translate('challenge_management'),
             Icons.emoji_events,
-            () {
+                () {
               Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (context) => const ChallengeManagementScreen(),
@@ -66,30 +64,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
           const SizedBox(height: 24),
 
           // Preferences Section
-          _buildSectionHeader("Preferences"),
+          _buildSectionHeader(loc.translate('preferences')),
           const SizedBox(height: 12),
-          _buildToggleOption("Leak Detection", waterProvider.leakDetectionEnabled, waterProvider.toggleLeakDetection),
+          _buildToggleOption(loc.translate('leak_detection'), waterProvider.leakDetectionEnabled, waterProvider.toggleLeakDetection),
 
           // Notifications Settings
           _buildNotificationsSection(waterProvider),
           const SizedBox(height: 24),
 
           // Language Selection
-          _buildSectionHeader("Language"),
+          _buildSectionHeader(loc.translate('language')),
           const SizedBox(height: 12),
           _buildLanguageSelector(languageProvider),
           const SizedBox(height: 24),
 
-          // Theme Mode
-          _buildSectionHeader("Appearance"),
-          const SizedBox(height: 12),
-          _buildToggleOption("Dark Mode", themeProvider.isDarkMode, (value) {
-            themeProvider.setTheme(value);
-          }),
-          const SizedBox(height: 24),
-
           // Account Section
-          _buildSectionHeader("Account"),
+          _buildSectionHeader(loc.translate('account')),
           const SizedBox(height: 12),
           _buildProfileButton(context),
           const SizedBox(height: 12),
@@ -97,14 +87,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
           const SizedBox(height: 24),
 
           // About Section
-          _buildSectionHeader("About"),
+          _buildSectionHeader(loc.translate('about')),
           const SizedBox(height: 12),
-          _buildInfoTile("App Version", AppConstants.appVersion),
-          _buildActionTile("Privacy Policy", Icons.policy, () {
-            // Open privacy policy
+          _buildInfoTile(loc.translate('app_version'), AppConstants.appVersion),
+          _buildActionTile(loc.translate('privacy_policy'), Icons.policy, () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const PrivacyPolicyScreen()),
+            );
           }),
-          _buildActionTile("Terms of Service", Icons.description, () {
-            // Open terms
+          _buildActionTile(loc.translate('terms_of_service'), Icons.description, () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const TermsOfServiceScreen()),
+            );
           }),
         ],
       ),
@@ -118,68 +114,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  Widget _buildGoalSetter(WaterProvider provider) {
-    return GlassmorphicContainer(
-      width: double.infinity,
-      height: 160,
-      borderRadius: 20,
-      blur: 20,
-      alignment: Alignment.center,
-      border: 2,
-      linearGradient: LinearGradient(
-        colors: [
-          Colors.white.withOpacity(0.1),
-          Colors.white.withOpacity(0.05),
-        ],
-      ),
-      borderGradient: LinearGradient(
-        colors: [
-          Colors.white.withOpacity(0.2),
-          Colors.white.withOpacity(0.1),
-        ],
-      ),
-      child: Padding(
-        padding: EdgeInsets.all(16),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  "Weekly Goal",
-                  style: AppTextStyles.heading3.copyWith(fontSize: 18),
-                ),
-                Text(
-                  "${provider.weeklyGoal.toInt()}L",
-                  style: AppTextStyles.heading2.copyWith(color: AppColors.primary),
-                ),
-              ],
-            ),
-            SizedBox(height: 16),
-            Slider(
-              value: provider.weeklyGoal,
-              min: AppConstants.minWeeklyGoal,
-              max: AppConstants.maxWeeklyGoal,
-              divisions: 19,
-              activeColor: Colors.cyanAccent,
-              label: "${provider.weeklyGoal.toInt()}L",
-              onChanged: (val) => provider.updateGoal(val),
-            ),
-            Text(
-              "Adjust your weekly water usage goal",
-              style: AppTextStyles.small,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   Widget _buildNotificationsSection(WaterProvider provider) {
+    final loc = AppLocalizations.of(context);
     return ExpansionTile(
       title: Text(
-        "Notifications",
+        loc.translate('notifications'),
         style: AppTextStyles.body,
       ),
       leading: Icon(Icons.notifications_outlined, color: AppColors.primary),
@@ -189,15 +128,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
         onChanged: provider.toggleNotifications,
       ),
       children: [
-        _buildToggleOption("Daily Usage Reminders", true, (value) {}),
-        _buildToggleOption("Goal Achievement Alerts", true, (value) {}),
-        _buildToggleOption("Leak Alerts", true, (value) {}),
-        _buildToggleOption("Vacation Mode Alerts", true, (value) {}),
+        _buildToggleOption(loc.translate('daily_usage_reminders'), true, (value) {}),
+        _buildToggleOption(loc.translate('goal_achievement_alerts'), true, (value) {}),
+        _buildToggleOption(loc.translate('leak_alerts'), true, (value) {}),
+        _buildToggleOption(loc.translate('vacation_mode_alerts'), true, (value) {}),
       ],
     );
   }
 
   Widget _buildLanguageSelector(LanguageProvider languageProvider) {
+    final loc = AppLocalizations.of(context);
     return GlassmorphicContainer(
       width: double.infinity,
       height: 70,
@@ -219,7 +159,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       ),
       child: ListTile(
         leading: Icon(Icons.language, color: AppColors.primary),
-        title: Text("Language", style: AppTextStyles.body),
+        title: Text(loc.translate('language'), style: AppTextStyles.body),
         trailing: DropdownButton<String>(
           value: languageProvider.currentLanguage,
           dropdownColor: AppColors.backgroundDark,
@@ -273,7 +213,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       ),
       child: ListTile(
         leading: Icon(Icons.person_outline, color: AppColors.primary),
-        title: Text("Edit Profile", style: AppTextStyles.body),
+        title: Text(AppLocalizations.of(context).translate('edit_profile'), style: AppTextStyles.body),
         trailing: Icon(Icons.arrow_forward_ios, color: Colors.white54, size: 16),
         onTap: () {
           Navigator.push(
@@ -307,19 +247,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
       ),
       child: ListTile(
         leading: Icon(Icons.logout, color: Colors.redAccent),
-        title: Text("Logout", style: GoogleFonts.poppins(color: Colors.white)),
+        title: Text(AppLocalizations.of(context).translate('logout'), style: GoogleFonts.poppins(color: Colors.white)),
         trailing: Icon(Icons.arrow_forward_ios, color: Colors.white54, size: 16),
         onTap: () {
+          final loc = AppLocalizations.of(context);
           showDialog(
             context: context,
             builder: (context) => AlertDialog(
               backgroundColor: Color(0xFF0D47A1),
-              title: Text("Logout", style: GoogleFonts.poppins(color: Colors.white)),
-              content: Text("Are you sure you want to logout?", style: TextStyle(color: Colors.white70)),
+              title: Text(loc.translate('logout'), style: GoogleFonts.poppins(color: Colors.white)),
+              content: Text(loc.translate('logout_confirm'), style: TextStyle(color: Colors.white70)),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: Text("Cancel", style: TextStyle(color: Colors.white70)),
+                  child: Text(loc.translate('cancel'), style: TextStyle(color: Colors.white70)),
                 ),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
@@ -327,7 +268,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     Navigator.pop(context);
                     Provider.of<AuthProvider>(context, listen: false).logout();
                   },
-                  child: Text("Logout", style: TextStyle(color: Colors.white)),
+                  child: Text(loc.translate('logout'), style: TextStyle(color: Colors.white)),
                 ),
               ],
             ),

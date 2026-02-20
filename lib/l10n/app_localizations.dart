@@ -21,11 +21,19 @@ class AppLocalizations {
       'good_evening': 'Good Evening',
       'good_night': 'Good Night',
 
+      // Navigation
+      'nav_home': 'Home',
+      'nav_ai_chat': 'AI Chat',
+      'nav_settings': 'Settings',
+      'log_reading': 'Log Reading',
+
       // Dashboard
       'weekly_progress': 'Weekly Progress',
+      'monthly_progress': 'Monthly Progress',
       'status_on_track': 'Status: On Track ✅',
       'status_over_limit': 'Over Limit! ⚠️',
       'daily_usage': 'Daily Usage (Last 7 Days)',
+      'liters': 'Liters',
       'leak_status': 'Leak Status',
       'daily_avg': 'Daily Avg',
       'secure': 'Secure',
@@ -72,6 +80,9 @@ class AppLocalizations {
       // Settings
       'settings': 'Settings',
       'preferences': 'Preferences',
+      'water_tracking': 'Water Tracking',
+      'household_members': 'Household Members',
+      'challenge_management': 'Challenge Management',
       'weekly_goal': 'Weekly Goal',
       'adjust_goal': 'Adjust your weekly water usage goal',
       'leak_detection': 'Leak Detection',
@@ -149,11 +160,19 @@ class AppLocalizations {
       'good_evening': 'مساء الخير',
       'good_night': 'تصبح على خير',
 
+      // Navigation
+      'nav_home': 'الرئيسية',
+      'nav_ai_chat': 'محادثة الذكاء',
+      'nav_settings': 'الإعدادات',
+      'log_reading': 'تسجيل القراءة',
+
       // Dashboard
       'weekly_progress': 'التقدم الأسبوعي',
+      'monthly_progress': 'التقدم الشهري',
       'status_on_track': 'الحالة: على المسار الصحيح ✅',
       'status_over_limit': 'تجاوز الحد! ⚠️',
       'daily_usage': 'الاستخدام اليومي (آخر 7 أيام)',
+      'liters': 'لتر',
       'leak_status': 'حالة التسرب',
       'daily_avg': 'المعدل اليومي',
       'secure': 'آمن',
@@ -200,6 +219,9 @@ class AppLocalizations {
       // Settings
       'settings': 'الإعدادات',
       'preferences': 'التفضيلات',
+      'water_tracking': 'تتبع المياه',
+      'household_members': 'أفراد المنزل',
+      'challenge_management': 'إدارة التحديات',
       'weekly_goal': 'الهدف الأسبوعي',
       'adjust_goal': 'اضبط هدف استخدام المياه الأسبوعي',
       'leak_detection': 'كشف التسرب',
@@ -277,11 +299,19 @@ class AppLocalizations {
       'good_evening': 'Bonsoir',
       'good_night': 'Bonne nuit',
 
+      // Navigation
+      'nav_home': 'Accueil',
+      'nav_ai_chat': 'Chat IA',
+      'nav_settings': 'Paramètres',
+      'log_reading': 'Enregistrer',
+
       // Dashboard
       'weekly_progress': 'Progrès hebdomadaire',
+      'monthly_progress': 'Progrès mensuel',
       'status_on_track': 'Statut: Sur la bonne voie ✅',
       'status_over_limit': 'Dépassement! ⚠️',
       'daily_usage': 'Utilisation quotidienne (7 derniers jours)',
+      'liters': 'Litres',
       'leak_status': 'État de fuite',
       'daily_avg': 'Moyenne quotidienne',
       'secure': 'Sécurisé',
@@ -328,6 +358,9 @@ class AppLocalizations {
       // Settings
       'settings': 'Paramètres',
       'preferences': 'Préférences',
+      'water_tracking': 'Suivi de l\'eau',
+      'household_members': 'Membres du foyer',
+      'challenge_management': 'Gestion des défis',
       'weekly_goal': 'Objectif hebdomadaire',
       'adjust_goal': 'Ajustez votre objectif d\'utilisation d\'eau hebdomadaire',
       'leak_detection': 'Détection de fuite',

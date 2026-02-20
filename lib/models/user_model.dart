@@ -79,8 +79,8 @@ class AppUser extends HiveObject {
       age: map['age'] as int?,
       householdMembers: map['householdMembers'] != null
           ? (map['householdMembers'] as List)
-              .map((m) => HouseholdMember.fromMap(m as Map<String, dynamic>))
-              .toList()
+          .map((m) => HouseholdMember.fromMap(Map<String, dynamic>.from(m)))
+          .toList()
           : [],
       hasCompletedOnboarding: map['hasCompletedOnboarding'] as bool? ?? false,
     );

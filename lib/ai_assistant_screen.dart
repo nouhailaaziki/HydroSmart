@@ -9,6 +9,7 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/intl.dart';
 import 'providers/water_provider.dart';
+import 'l10n/app_localizations.dart';
 
 class AIAssistantScreen extends StatefulWidget {
   const AIAssistantScreen({super.key});
@@ -215,7 +216,7 @@ class _AIAssistantScreenState extends State<AIAssistantScreen> {
       extendBodyBehindAppBar: true,
       drawer: _buildChatDrawer(),
       appBar: AppBar(
-        title: Text("AI Assistant", style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
+        title: Text(AppLocalizations.of(context).translate('ai_assistant'), style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: Builder(
@@ -359,7 +360,10 @@ class _AIAssistantScreenState extends State<AIAssistantScreen> {
   }
 
   Widget _buildTypingIndicator() {
-    return const Padding(padding: EdgeInsets.only(left: 20, bottom: 10), child: Text("Typing...", style: TextStyle(color: Colors.white38)));
+    return Padding(
+      padding: const EdgeInsets.only(left: 20, bottom: 10),
+      child: Text(AppLocalizations.of(context).translate('typing'), style: const TextStyle(color: Colors.white38)),
+    );
   }
 
   Widget _buildInputArea() {
@@ -379,7 +383,7 @@ class _AIAssistantScreenState extends State<AIAssistantScreen> {
                 controller: _controller,
                 style: const TextStyle(color: Colors.white),
                 decoration: InputDecoration(
-                  hintText: "Ask something...",
+                  hintText: AppLocalizations.of(context).translate('ask_something'),
                   filled: true,
                   fillColor: Colors.white.withOpacity(0.1),
                   border: OutlineInputBorder(

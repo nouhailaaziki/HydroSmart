@@ -19,10 +19,16 @@ class AuthProvider with ChangeNotifier {
 
   /// Load user from storage
   Future<void> _loadUser() async {
-    final userData = _userBox?.get('current_user');
-    if (userData != null) {
-      _user = AppUser.fromMap(Map<String, dynamic>.from(userData));
-      notifyListeners();
+    try {
+      final userData = _userBox?.get('current_user');
+      if (userData != null) {
+        _user = AppUser.fromMap(Map<String, dynamic>.from(userData));
+        notifyListeners();
+      }
+    } catch (e) {
+      debugPrint('Error loading user from cache, clearing corrupted data: $e');
+      await _userBox?.delete('current_user');
+      _user = null;
     }
   }
 

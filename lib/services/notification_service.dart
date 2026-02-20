@@ -1,4 +1,5 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest_all.dart' as tz_data;
@@ -9,12 +10,13 @@ class NotificationService {
   NotificationService._internal();
 
   final FlutterLocalNotificationsPlugin _notifications =
-      FlutterLocalNotificationsPlugin();
+  FlutterLocalNotificationsPlugin();
 
   bool _isInitialized = false;
 
   /// Initialize the notification service
   Future<void> initialize() async {
+    if (kIsWeb) return;
     if (_isInitialized) return;
 
     // Initialize timezone data
@@ -48,13 +50,14 @@ class NotificationService {
 
   /// Request notification permissions
   Future<bool> requestPermissions() async {
+    if (kIsWeb) return false;
     if (!_isInitialized) {
       await initialize();
     }
 
     final androidImplementation =
-        _notifications.resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>();
+    _notifications.resolvePlatformSpecificImplementation<
+        AndroidFlutterLocalNotificationsPlugin>();
 
     final granted = await androidImplementation?.requestNotificationsPermission();
 
@@ -65,6 +68,7 @@ class NotificationService {
   Future<void> scheduleDailyMeterReading({
     required TimeOfDay time,
   }) async {
+    if (kIsWeb) return;
     if (!_isInitialized) {
       await initialize();
     }
@@ -98,7 +102,7 @@ class NotificationService {
       details,
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
       uiLocalNotificationDateInterpretation:
-          UILocalNotificationDateInterpretation.absoluteTime,
+      UILocalNotificationDateInterpretation.absoluteTime,
       matchDateTimeComponents: DateTimeComponents.time,
       payload: 'meter_reading',
     );
@@ -108,6 +112,7 @@ class NotificationService {
   Future<void> scheduleMotivationalNotification({
     required TimeOfDay time,
   }) async {
+    if (kIsWeb) return;
     if (!_isInitialized) {
       await initialize();
     }
@@ -142,7 +147,7 @@ class NotificationService {
 
     // Schedule with random message
     final message = motivationalMessages[
-        DateTime.now().millisecondsSinceEpoch % motivationalMessages.length];
+    DateTime.now().millisecondsSinceEpoch % motivationalMessages.length];
 
     await _notifications.zonedSchedule(
       1, // Different ID for motivational notifications
@@ -152,7 +157,7 @@ class NotificationService {
       details,
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
       uiLocalNotificationDateInterpretation:
-          UILocalNotificationDateInterpretation.absoluteTime,
+      UILocalNotificationDateInterpretation.absoluteTime,
       matchDateTimeComponents: DateTimeComponents.time,
       payload: 'motivation',
     );
@@ -164,6 +169,7 @@ class NotificationService {
     required String body,
     String? payload,
   }) async {
+    if (kIsWeb) return;
     if (!_isInitialized) {
       await initialize();
     }
@@ -199,11 +205,13 @@ class NotificationService {
 
   /// Cancel all notifications
   Future<void> cancelAllNotifications() async {
+    if (kIsWeb) return;
     await _notifications.cancelAll();
   }
 
   /// Cancel specific notification
   Future<void> cancelNotification(int id) async {
+    if (kIsWeb) return;
     await _notifications.cancel(id);
   }
 

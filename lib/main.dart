@@ -62,7 +62,6 @@ class HydrosmartApp extends StatelessWidget {
     final isAuthenticated = authProvider.isAuthenticated;
     final hasCompletedOnboarding = authProvider.hasCompletedOnboarding;
     final languageProvider = context.watch<LanguageProvider>();
-    final themeProvider = context.watch<ThemeProvider>();
 
     Widget home;
     if (!isAuthenticated) {
@@ -78,7 +77,7 @@ class HydrosmartApp extends StatelessWidget {
       title: 'Hydrosmart',
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
-      themeMode: themeProvider.themeMode,
+      themeMode: ThemeMode.dark,
       locale: languageProvider.currentLocale,
       localizationsDelegates: const [
         AppLocalizationsDelegate(),
@@ -165,15 +164,15 @@ class _MainNavigationShellState extends State<MainNavigationShell> {
       ),
       floatingActionButton: _selectedIndex == 0
           ? FloatingActionButton.extended(
-              onPressed: _showMeterInput,
-              backgroundColor: Colors.cyanAccent,
-              foregroundColor: Colors.black,
-              icon: const Icon(Icons.water_drop),
-              label: const Text(
-                'Log Reading',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-            )
+        onPressed: _showMeterInput,
+        backgroundColor: Colors.cyanAccent,
+        foregroundColor: Colors.black,
+        icon: const Icon(Icons.water_drop),
+        label: Text(
+          AppLocalizations.of(context).translate('log_reading'),
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
+      )
           : null,
       bottomNavigationBar: NavigationBar(
         height: 70,
@@ -182,21 +181,21 @@ class _MainNavigationShellState extends State<MainNavigationShell> {
         backgroundColor: const Color(0xFF001529),
         indicatorColor: Colors.cyanAccent.withOpacity(0.2),
         labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-        destinations: const [
+        destinations: [
           NavigationDestination(
-              icon: Icon(Icons.dashboard_outlined),
-              selectedIcon: Icon(Icons.dashboard, color: Colors.cyanAccent),
-              label: 'Home'
+            icon: const Icon(Icons.dashboard_outlined),
+            selectedIcon: const Icon(Icons.dashboard, color: Colors.cyanAccent),
+            label: AppLocalizations.of(context).translate('nav_home'),
           ),
           NavigationDestination(
-              icon: Icon(Icons.chat_bubble_outline),
-              selectedIcon: Icon(Icons.chat_bubble, color: Colors.cyanAccent),
-              label: 'AI Chat'
+            icon: const Icon(Icons.chat_bubble_outline),
+            selectedIcon: const Icon(Icons.chat_bubble, color: Colors.cyanAccent),
+            label: AppLocalizations.of(context).translate('nav_ai_chat'),
           ),
           NavigationDestination(
-              icon: Icon(Icons.settings_outlined),
-              selectedIcon: Icon(Icons.settings, color: Colors.cyanAccent),
-              label: 'Settings'
+            icon: const Icon(Icons.settings_outlined),
+            selectedIcon: const Icon(Icons.settings, color: Colors.cyanAccent),
+            label: AppLocalizations.of(context).translate('nav_settings'),
           ),
         ],
       ),

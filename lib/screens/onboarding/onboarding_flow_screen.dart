@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/water_provider.dart';
+import '../../providers/language_provider.dart';
 import '../../models/challenge_model.dart';
 import '../../models/household_member_model.dart';
 import '../../main.dart' show MainNavigationShell;
+import 'onboarding_language_screen.dart';
 import 'onboarding_name_screen.dart';
 import 'onboarding_age_screen.dart';
 import 'onboarding_household_screen.dart';
@@ -19,6 +21,7 @@ class OnboardingFlowScreen extends StatefulWidget {
 }
 
 class _OnboardingFlowScreenState extends State<OnboardingFlowScreen> {
+  bool? _languageSelected;
   String? _name;
   int? _age;
   List<HouseholdMember>? _householdMembers;
@@ -49,6 +52,18 @@ class _OnboardingFlowScreenState extends State<OnboardingFlowScreen> {
   }
 
   Widget _buildCurrentScreen() {
+    final languageProvider = Provider.of<LanguageProvider>(context);
+
+    // Step 0: Language Selection (only if not yet selected in this session,
+    // and not previously saved in storage)
+    if (_languageSelected != true && !languageProvider.hasSelectedLanguage) {
+      return LanguageSelectionScreen(
+        onLanguageSelected: () {
+          setState(() => _languageSelected = true);
+        },
+      );
+    }
+
     // Step 1: Name
     if (_name == null) {
       return OnboardingNameScreen(
@@ -108,7 +123,7 @@ class _OnboardingFlowScreenState extends State<OnboardingFlowScreen> {
       if (mounted) {
         showDialog(
           context: context,
-          barrierDismissible: false,
+          barrierDismissible: true,
           builder: (context) => const Center(
             child: CircularProgressIndicator(
               color: Colors.cyanAccent,
@@ -216,6 +231,8 @@ class _OnboardingFlowScreenState extends State<OnboardingFlowScreen> {
             duration: Duration(seconds: 4),
           ),
         );
+
+        // **CRITICAL FIX**: Navigate even on error (non-blocking)
         await _navigateToHome();
       }
     }

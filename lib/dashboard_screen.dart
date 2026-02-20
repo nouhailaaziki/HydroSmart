@@ -8,9 +8,10 @@ import 'providers/auth_provider.dart';
 import 'models/challenge_model.dart';
 import 'models/usage_record_model.dart';
 import 'screens/achievements_screen.dart';
+import 'l10n/app_localizations.dart';
 
 class HydrosmartDashboard extends StatelessWidget {
-  static const double _yAxisInterval = 250.0;
+  static const double _yAxisInterval = 20.0;
 
   @override
   Widget build(BuildContext context) {
@@ -34,22 +35,24 @@ class HydrosmartDashboard extends StatelessWidget {
     );
   }
 
-  String _getGreeting() {
+  String _getGreeting(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     final hour = DateTime.now().hour;
     if (hour >= 5 && hour < 12) {
-      return "Good Morning";
+      return loc.translate('good_morning');
     } else if (hour >= 12 && hour < 17) {
-      return "Good Afternoon";
+      return loc.translate('good_afternoon');
     } else if (hour >= 17 && hour < 21) {
-      return "Good Evening";
+      return loc.translate('good_evening');
     } else {
-      return "Good Night";
+      return loc.translate('good_night');
     }
   }
 
   Widget _buildHeader(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
     final waterProvider = Provider.of<WaterProvider>(context);
+    final loc = AppLocalizations.of(context);
     final userName = authProvider.user?.name ?? "User";
 
     return Row(
@@ -58,7 +61,7 @@ class HydrosmartDashboard extends StatelessWidget {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("${_getGreeting()}, $userName", style: GoogleFonts.poppins(color: Colors.white70, fontSize: 16)),
+            Text("${_getGreeting(context)}, $userName", style: GoogleFonts.poppins(color: Colors.white70, fontSize: 16)),
             Text("Hydrosmart", style: GoogleFonts.poppins(color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold)),
             SizedBox(height: 4),
             Row(
@@ -66,14 +69,14 @@ class HydrosmartDashboard extends StatelessWidget {
                 Icon(Icons.star, color: Colors.amber, size: 16),
                 SizedBox(width: 4),
                 Text(
-                  "${waterProvider.totalPoints} points",
+                  "${waterProvider.totalPoints} ${loc.translate('points')}",
                   style: GoogleFonts.poppins(color: Colors.amber, fontSize: 14, fontWeight: FontWeight.w600),
                 ),
                 SizedBox(width: 12),
                 Icon(Icons.local_fire_department, color: Colors.orangeAccent, size: 16),
                 SizedBox(width: 4),
                 Text(
-                  "${waterProvider.currentStreak} day streak",
+                  "${waterProvider.currentStreak} ${loc.translate('day_streak')}",
                   style: GoogleFonts.poppins(color: Colors.orangeAccent, fontSize: 14, fontWeight: FontWeight.w600),
                 ),
               ],
@@ -88,10 +91,11 @@ class HydrosmartDashboard extends StatelessWidget {
   Widget _buildMainGoalCard(BuildContext context) {
     // Access the live data
     final waterData = Provider.of<WaterProvider>(context);
+    final loc = AppLocalizations.of(context);
 
     // Calculate current period consumption from meter readings
     double currentPeriodConsumption = 0.0;
-    String periodLabel = "Weekly Progress";
+    String periodLabel = loc.translate('weekly_progress');
 
     if (waterData.currentChallenge != null && waterData.currentChallenge!.isActive) {
       // Use challenge-based progress
@@ -102,8 +106,8 @@ class HydrosmartDashboard extends StatelessWidget {
           .fold(0.0, (sum, consumption) => sum + consumption);
 
       periodLabel = challenge.type == ChallengeType.weekly
-          ? "Weekly Progress"
-          : "Monthly Progress";
+          ? loc.translate('weekly_progress')
+          : loc.translate('monthly_progress');
     } else {
       // Fallback to weekly calculation
       final weekAgo = DateTime.now().subtract(const Duration(days: 7));
@@ -135,7 +139,7 @@ class HydrosmartDashboard extends StatelessWidget {
               style: GoogleFonts.poppins(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold)
           ),
           Text(
-              isOverLimit ? "Over Limit! ⚠️" : "Status: On Track ✅",
+              isOverLimit ? loc.translate('status_over_limit') : loc.translate('status_on_track'),
               style: GoogleFonts.poppins(
                   color: isOverLimit ? Colors.redAccent : Colors.greenAccent
               )
@@ -158,6 +162,7 @@ class HydrosmartDashboard extends StatelessWidget {
       builder: (context, waterProvider, _) {
         final last7Days = waterProvider.getLastSevenDays();
         final maxY = _calculateMaxYAxisValue(last7Days);
+        final loc = AppLocalizations.of(context);
 
         return Container(
           height: 220,
@@ -173,7 +178,7 @@ class HydrosmartDashboard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    "Daily Usage (Last 7 Days)",
+                    loc.translate('daily_usage'),
                     style: GoogleFonts.poppins(
                       color: Colors.white,
                       fontSize: 16,
@@ -187,7 +192,7 @@ class HydrosmartDashboard extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
-                      "Liters",
+                      loc.translate('liters'),
                       style: GoogleFonts.poppins(
                         color: Colors.cyanAccent,
                         fontSize: 12,
@@ -312,6 +317,7 @@ class HydrosmartDashboard extends StatelessWidget {
 
   Widget _buildQuickStats(BuildContext context) {
     final waterData = Provider.of<WaterProvider>(context);
+    final loc = AppLocalizations.of(context);
 
     // Calculate daily average display
     String dailyAvgDisplay;
@@ -327,13 +333,13 @@ class HydrosmartDashboard extends StatelessWidget {
         Row(
           children: [
             Expanded(child: _statTile(
-                !waterData.leakDetectionEnabled ? "OFF" : (waterData.isLeakDetected ? "ALERT" : "Secure"),
-                "Leak Status",
+                !waterData.leakDetectionEnabled ? loc.translate('off') : (waterData.isLeakDetected ? loc.translate('alert') : loc.translate('secure')),
+                loc.translate('leak_status'),
                 waterData.leakDetectionEnabled ? (waterData.isLeakDetected ? Icons.warning : Icons.check_circle) : Icons.do_not_disturb_on,
                 waterData.leakDetectionEnabled ? (waterData.isLeakDetected ? Colors.redAccent : Colors.greenAccent) : Colors.grey
             )),
             SizedBox(width: 15),
-            Expanded(child: _statTile(dailyAvgDisplay, "Daily Avg", Icons.water_drop, Colors.blueAccent)),
+            Expanded(child: _statTile(dailyAvgDisplay, loc.translate('daily_avg'), Icons.water_drop, Colors.blueAccent)),
           ],
         ),
         SizedBox(height: 15),
@@ -343,6 +349,7 @@ class HydrosmartDashboard extends StatelessWidget {
   }
 
   Widget _buildAchievementsCard(BuildContext context, WaterProvider waterData) {
+    final loc = AppLocalizations.of(context);
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -378,7 +385,7 @@ class HydrosmartDashboard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "Achievements",
+                    loc.translate('achievements'),
                     style: GoogleFonts.poppins(
                       color: Colors.white,
                       fontSize: 16,
@@ -387,7 +394,7 @@ class HydrosmartDashboard extends StatelessWidget {
                   ),
                   SizedBox(height: 4),
                   Text(
-                    "${waterData.unlockedAchievements.length}/${waterData.achievements.length} unlocked",
+                    "${waterData.unlockedAchievements.length}/${waterData.achievements.length} ${loc.translate('unlocked')}",
                     style: GoogleFonts.poppins(
                       color: Colors.white70,
                       fontSize: 12,

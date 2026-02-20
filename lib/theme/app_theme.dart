@@ -13,12 +13,16 @@ class AppTheme {
       scaffoldBackgroundColor: Colors.grey[50],
 
       // Text Theme
-      textTheme: GoogleFonts.poppinsTextTheme(ThemeData.light().textTheme),
+      textTheme: GoogleFonts.poppinsTextTheme(ThemeData.light().textTheme).apply(
+        bodyColor: Colors.black87,
+        displayColor: Colors.black87,
+      ),
 
       // App Bar Theme
       appBarTheme: AppBarTheme(
         backgroundColor: Colors.white,
-        elevation: 0,
+        elevation: 1,
+        shadowColor: Colors.black12,
         centerTitle: true,
         titleTextStyle: GoogleFonts.poppins(
           fontSize: 20,
@@ -32,6 +36,7 @@ class AppTheme {
       cardTheme: CardThemeData(
         color: Colors.white,
         elevation: 2,
+        shadowColor: Colors.black12,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),
@@ -41,6 +46,7 @@ class AppTheme {
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: Colors.grey[100],
+        labelStyle: TextStyle(color: Colors.grey[700]),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide.none,
@@ -57,16 +63,16 @@ class AppTheme {
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(color: AppColors.error),
         ),
-        hintStyle: TextStyle(color: Colors.grey[600]),
+        hintStyle: TextStyle(color: Colors.grey[500]),
       ),
 
       // Elevated Button Theme
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primary,
-          foregroundColor: Colors.black,
+          foregroundColor: Colors.white,
           elevation: 0,
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
@@ -75,6 +81,53 @@ class AppTheme {
             fontWeight: FontWeight.w600,
           ),
         ),
+      ),
+
+      // Outlined Button Theme
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          foregroundColor: AppColors.primary,
+          side: BorderSide(color: AppColors.primary),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+      ),
+
+      // Switch Theme
+      switchTheme: SwitchThemeData(
+        thumbColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) return AppColors.primary;
+          return Colors.grey[400];
+        }),
+        trackColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return AppColors.primary.withOpacity(0.4);
+          }
+          return Colors.grey[300];
+        }),
+      ),
+
+      // Navigation Bar Theme
+      navigationBarTheme: NavigationBarThemeData(
+        backgroundColor: Colors.white,
+        indicatorColor: AppColors.primary.withOpacity(0.15),
+        labelTextStyle: WidgetStateProperty.all(
+          GoogleFonts.poppins(fontSize: 12, color: Colors.black87),
+        ),
+        iconTheme: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return IconThemeData(color: AppColors.primary, size: 24);
+          }
+          return IconThemeData(color: Colors.grey[600], size: 24);
+        }),
+      ),
+
+      // Divider Theme
+      dividerTheme: DividerThemeData(
+        color: Colors.grey[200],
+        thickness: 1,
       ),
 
       // Icon Theme
@@ -92,7 +145,10 @@ class AppTheme {
       colorSchemeSeed: AppColors.primary,
 
       // Text Theme
-      textTheme: GoogleFonts.poppinsTextTheme(ThemeData.dark().textTheme),
+      textTheme: GoogleFonts.poppinsTextTheme(ThemeData.dark().textTheme).apply(
+        bodyColor: Colors.white,
+        displayColor: Colors.white,
+      ),
 
       // App Bar Theme
       appBarTheme: AppBarTheme(
@@ -104,6 +160,7 @@ class AppTheme {
           fontWeight: FontWeight.w600,
           color: AppColors.textWhite,
         ),
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
 
       // Card Theme
@@ -119,13 +176,14 @@ class AppTheme {
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: AppColors.textWhite.withOpacity(0.1),
+        labelStyle: const TextStyle(color: Colors.white70),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide.none,
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: AppColors.textWhite.withOpacity(0.1)),
+          borderSide: BorderSide(color: AppColors.textWhite.withOpacity(0.2)),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -144,7 +202,7 @@ class AppTheme {
           backgroundColor: AppColors.primary,
           foregroundColor: Colors.black,
           elevation: 0,
-          padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
@@ -153,6 +211,41 @@ class AppTheme {
             fontWeight: FontWeight.w600,
           ),
         ),
+      ),
+
+      // Switch Theme
+      switchTheme: SwitchThemeData(
+        thumbColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) return Colors.cyanAccent;
+          return Colors.grey[600];
+        }),
+        trackColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return Colors.cyanAccent.withOpacity(0.4);
+          }
+          return Colors.grey[800];
+        }),
+      ),
+
+      // Navigation Bar Theme
+      navigationBarTheme: NavigationBarThemeData(
+        backgroundColor: const Color(0xFF001529),
+        indicatorColor: Colors.cyanAccent.withOpacity(0.2),
+        labelTextStyle: WidgetStateProperty.all(
+          GoogleFonts.poppins(fontSize: 12, color: Colors.white),
+        ),
+        iconTheme: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return const IconThemeData(color: Colors.cyanAccent, size: 24);
+          }
+          return const IconThemeData(color: Colors.white54, size: 24);
+        }),
+      ),
+
+      // Divider Theme
+      dividerTheme: DividerThemeData(
+        color: Colors.white.withOpacity(0.1),
+        thickness: 1,
       ),
 
       // Icon Theme

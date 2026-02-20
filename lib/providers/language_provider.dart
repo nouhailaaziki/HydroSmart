@@ -3,8 +3,10 @@ import 'package:hive/hive.dart';
 
 class LanguageProvider with ChangeNotifier {
   String _currentLanguage = 'en';
+  bool _hasSelectedLanguage = false;
 
   String get currentLanguage => _currentLanguage;
+  bool get hasSelectedLanguage => _hasSelectedLanguage;
 
   Locale get currentLocale {
     switch (_currentLanguage) {
@@ -26,22 +28,25 @@ class LanguageProvider with ChangeNotifier {
   Future<void> _loadLanguage() async {
     try {
       final box = await Hive.openBox('settings');
+      _hasSelectedLanguage = box.containsKey('language');
       _currentLanguage = box.get('language', defaultValue: 'en');
       notifyListeners();
     } catch (e) {
       _currentLanguage = 'en';
+      _hasSelectedLanguage = false;
     }
   }
 
   Future<void> setLanguage(String languageCode) async {
-    _currentLanguage = languageCode;
     try {
       final box = await Hive.openBox('settings');
       await box.put('language', languageCode);
+      _currentLanguage = languageCode;
+      _hasSelectedLanguage = true;
+      notifyListeners();
     } catch (e) {
       debugPrint('Error saving language: $e');
     }
-    notifyListeners();
   }
 
   String getLanguageName(String code) {

@@ -58,8 +58,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
       _isSaving = true;
     });
 
-    // Simulate save delay
-    await Future.delayed(Duration(seconds: 1));
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final user = authProvider.user;
+
+    if (user != null) {
+      final updatedUser = user.copyWith(
+        name: _nameController.text.trim(),
+        email: _emailController.text.trim(),
+      );
+      await authProvider.updateUser(updatedUser);
+    }
 
     setState(() {
       _isSaving = false;

@@ -120,7 +120,7 @@ class AppLocalizations {
       // Validation
       'name_required': 'Name is required',
       'name_min_length': 'Name must be at least 2 characters',
-      'name_invalid': 'Name can only contain letters and spaces',
+      'name_invalid': 'Name must contain only Arabic or only Latin letters and single spaces (no mixing)',
       'email_required': 'Email is required',
       'email_invalid': 'Please enter a valid email',
       'password_required': 'Password is required',
@@ -142,6 +142,13 @@ class AppLocalizations {
       'ai_assistant': 'AI Assistant',
       'ask_something': 'Ask something...',
       'typing': 'Typing...',
+      'ai_greeting': 'Hello! How can I help you save water today?',
+      'ai_new_chat': 'New Chat',
+      'ai_search_chats': 'Search chats...',
+      'ai_no_chats_yet': 'No chats yet',
+      'ai_no_results_found': 'No results found',
+      'ai_new_session': 'New session. How can I help?',
+      'today': 'Today',
 
       // Vacation Mode
       'vacation_mode': 'Vacation Mode?',
@@ -149,6 +156,50 @@ class AppLocalizations {
       'enable': 'Enable',
       'im_here': "No, I'm here",
       'vacation_enabled': 'Vacation mode enabled',
+
+      // Onboarding
+      'onboarding_welcome_title': 'Welcome to HydroSmart',
+      'onboarding_language_prompt': 'Choose your preferred language',
+      'continue': 'Continue',
+      // Onboarding – Name screen
+      'onboarding_name_title': "What's your name?",
+      'onboarding_name_subtitle': "Let's personalize your water-saving journey",
+      'onboarding_name_hint': 'Enter your full name',
+      'onboarding_name_rule_letters': 'Only Arabic or Latin letters and single spaces (no mixing)',
+      'onboarding_name_rule_min_length': 'At least 2 characters',
+      'onboarding_name_rule_no_spaces': 'No spaces at start or end',
+      // Onboarding – Age screen
+      'onboarding_age_greeting': 'Hi',
+      'onboarding_age_title': "What's your age?",
+      'onboarding_age_hint': 'Your age',
+      // Onboarding – Household screen
+      'onboarding_household_title': 'Tell us about your household',
+      'onboarding_household_subtitle': 'This helps us estimate your water usage',
+      'onboarding_household_size_question': 'How many people live in your household?',
+      'onboarding_household_members_age_title': 'Age of other household members',
+      'onboarding_household_member_age_label': 'Member {n} Age',
+      // Onboarding – Meter screen
+      'onboarding_meter_title': 'Set up your water meter',
+      'onboarding_meter_subtitle': "We'll track your water usage to help you save",
+      'onboarding_meter_reading_label': 'Current Meter Reading (m³)',
+      'onboarding_meter_hint_text':
+      "Find this number on your water meter. It's usually displayed in cubic meters (m³).",
+      'onboarding_reminder_time_label': 'Daily Reminder Time',
+      'onboarding_reminder_hint_text':
+      "We'll remind you daily to record your water meter reading.",
+      // Onboarding – Challenge screen
+      'onboarding_challenge_title': 'Choose your challenge',
+      'onboarding_challenge_subtitle': 'Start saving water with a personalized goal',
+      'onboarding_challenge_weekly_title': 'Weekly Challenge',
+      'onboarding_challenge_weekly_desc': '7-day water saving goal',
+      'onboarding_challenge_weekly_duration': '1 week',
+      'onboarding_challenge_monthly_title': 'Monthly Challenge',
+      'onboarding_challenge_monthly_desc': '30-day water saving goal',
+      'onboarding_challenge_monthly_duration': '1 month',
+      'onboarding_challenge_progressive_title': 'Progressive Challenges',
+      'onboarding_challenge_progressive_desc':
+      'Each time you complete a challenge, your next goal will be slightly more ambitious, helping you save even more water!',
+      'onboarding_challenge_start_btn': 'Start My Journey',
     },
     'ar': {
       // App
@@ -259,7 +310,7 @@ class AppLocalizations {
       // Validation
       'name_required': 'الاسم مطلوب',
       'name_min_length': 'يجب أن يكون الاسم على الأقل حرفين',
-      'name_invalid': 'يمكن أن يحتوي الاسم على أحرف ومسافات فقط',
+      'name_invalid': 'يجب أن يحتوي الاسم على أحرف عربية فقط أو لاتينية فقط ومسافات منفردة (لا خلط)',
       'email_required': 'البريد الإلكتروني مطلوب',
       'email_invalid': 'الرجاء إدخال بريد إلكتروني صحيح',
       'password_required': 'كلمة المرور مطلوبة',
@@ -281,6 +332,13 @@ class AppLocalizations {
       'ai_assistant': 'مساعد الذكاء الاصطناعي',
       'ask_something': 'اسأل شيئاً...',
       'typing': 'يكتب...',
+      'ai_greeting': 'مرحباً! كيف يمكنني مساعدتك في توفير المياه اليوم؟',
+      'ai_new_chat': 'محادثة جديدة',
+      'ai_search_chats': 'البحث في المحادثات...',
+      'ai_no_chats_yet': 'لا توجد محادثات بعد',
+      'ai_no_results_found': 'لم يتم العثور على نتائج',
+      'ai_new_session': 'جلسة جديدة. كيف يمكنني المساعدة؟',
+      'today': 'اليوم',
 
       // Vacation Mode
       'vacation_mode': 'وضع الإجازة؟',
@@ -288,6 +346,49 @@ class AppLocalizations {
       'enable': 'تفعيل',
       'im_here': 'لا، أنا هنا',
       'vacation_enabled': 'تم تفعيل وضع الإجازة',
+
+      // Onboarding
+      'onboarding_welcome_title': 'مرحباً بك في هيدروسمارت',
+      'onboarding_language_prompt': 'اختر لغتك المفضلة',
+      'continue': 'متابعة',
+      // Onboarding – Name screen
+      'onboarding_name_title': 'ما اسمك؟',
+      'onboarding_name_subtitle': 'دعنا نخصص رحلة توفير المياه الخاصة بك',
+      'onboarding_name_hint': 'أدخل اسمك الكامل',
+      'onboarding_name_rule_letters': 'أحرف عربية أو لاتينية فقط ومسافات منفردة (لا خلط)',
+      'onboarding_name_rule_min_length': 'حرفان على الأقل',
+      'onboarding_name_rule_no_spaces': 'لا مسافات في البداية أو النهاية',
+      // Onboarding – Age screen
+      'onboarding_age_greeting': 'مرحباً',
+      'onboarding_age_title': 'كم عمرك؟',
+      'onboarding_age_hint': 'عمرك',
+      // Onboarding – Household screen
+      'onboarding_household_title': 'أخبرنا عن منزلك',
+      'onboarding_household_subtitle': 'هذا يساعدنا في تقدير استهلاكك للمياه',
+      'onboarding_household_size_question': 'كم عدد الأشخاص الذين يعيشون في منزلك؟',
+      'onboarding_household_members_age_title': 'أعمار أفراد المنزل الآخرين',
+      'onboarding_household_member_age_label': 'عمر العضو {n}',
+      // Onboarding – Meter screen
+      'onboarding_meter_title': 'إعداد عداد المياه',
+      'onboarding_meter_subtitle': 'سنتتبع استهلاكك للمياه لمساعدتك على التوفير',
+      'onboarding_meter_reading_label': 'قراءة العداد الحالية (م³)',
+      'onboarding_meter_hint_text':
+      'ابحث عن هذا الرقم على عداد المياه. عادةً ما يُعرض بالأمتار المكعبة (م³).',
+      'onboarding_reminder_time_label': 'وقت التذكير اليومي',
+      'onboarding_reminder_hint_text': 'سنذكّرك يومياً بتسجيل قراءة عداد المياه.',
+      // Onboarding – Challenge screen
+      'onboarding_challenge_title': 'اختر تحديك',
+      'onboarding_challenge_subtitle': 'ابدأ توفير المياه بهدف مخصص',
+      'onboarding_challenge_weekly_title': 'التحدي الأسبوعي',
+      'onboarding_challenge_weekly_desc': 'هدف توفير المياه لمدة 7 أيام',
+      'onboarding_challenge_weekly_duration': 'أسبوع واحد',
+      'onboarding_challenge_monthly_title': 'التحدي الشهري',
+      'onboarding_challenge_monthly_desc': 'هدف توفير المياه لمدة 30 يوماً',
+      'onboarding_challenge_monthly_duration': 'شهر واحد',
+      'onboarding_challenge_progressive_title': 'التحديات التدريجية',
+      'onboarding_challenge_progressive_desc':
+      'في كل مرة تكمل فيها تحدياً، سيكون هدفك التالي أكثر طموحاً قليلاً، مما يساعدك على توفير المزيد من المياه!',
+      'onboarding_challenge_start_btn': 'ابدأ رحلتي',
     },
     'fr': {
       // App
@@ -398,7 +499,7 @@ class AppLocalizations {
       // Validation
       'name_required': 'Le nom est requis',
       'name_min_length': 'Le nom doit comporter au moins 2 caractères',
-      'name_invalid': 'Le nom ne peut contenir que des lettres et des espaces',
+      'name_invalid': 'Le nom doit contenir uniquement des lettres arabes ou latines et des espaces simples (sans mélange)',
       'email_required': 'L\'e-mail est requis',
       'email_invalid': 'Veuillez entrer un e-mail valide',
       'password_required': 'Le mot de passe est requis',
@@ -420,6 +521,13 @@ class AppLocalizations {
       'ai_assistant': 'Assistant IA',
       'ask_something': 'Demandez quelque chose...',
       'typing': 'En train d\'écrire...',
+      'ai_greeting': 'Bonjour ! Comment puis-je vous aider à économiser l\'eau aujourd\'hui ?',
+      'ai_new_chat': 'Nouvelle conversation',
+      'ai_search_chats': 'Rechercher des conversations...',
+      'ai_no_chats_yet': 'Aucune conversation',
+      'ai_no_results_found': 'Aucun résultat trouvé',
+      'ai_new_session': 'Nouvelle session. Comment puis-je vous aider ?',
+      'today': 'Aujourd\'hui',
 
       // Vacation Mode
       'vacation_mode': 'Mode vacances?',
@@ -427,11 +535,64 @@ class AppLocalizations {
       'enable': 'Activer',
       'im_here': 'Non, je suis là',
       'vacation_enabled': 'Mode vacances activé',
+
+      // Onboarding
+      'onboarding_welcome_title': 'Bienvenue sur HydroSmart',
+      'onboarding_language_prompt': 'Choisissez votre langue préférée',
+      'continue': 'Continuer',
+      // Onboarding – Name screen
+      'onboarding_name_title': 'Quel est votre nom ?',
+      'onboarding_name_subtitle': "Personnalisons votre parcours d'économie d'eau",
+      'onboarding_name_hint': 'Entrez votre nom complet',
+      'onboarding_name_rule_letters': 'Uniquement lettres arabes ou latines et espaces simples (sans mélange)',
+      'onboarding_name_rule_min_length': 'Au moins 2 caractères',
+      'onboarding_name_rule_no_spaces': "Pas d'espaces au début ou à la fin",
+      // Onboarding – Age screen
+      'onboarding_age_greeting': 'Bonjour',
+      'onboarding_age_title': 'Quel est votre âge ?',
+      'onboarding_age_hint': 'Votre âge',
+      // Onboarding – Household screen
+      'onboarding_household_title': 'Parlez-nous de votre foyer',
+      'onboarding_household_subtitle': 'Cela nous aide à estimer votre consommation d\'eau',
+      'onboarding_household_size_question': 'Combien de personnes vivent dans votre foyer ?',
+      'onboarding_household_members_age_title': 'Âge des autres membres du foyer',
+      'onboarding_household_member_age_label': 'Âge du membre {n}',
+      // Onboarding – Meter screen
+      'onboarding_meter_title': "Configurer votre compteur d'eau",
+      'onboarding_meter_subtitle': "Nous suivrons votre consommation d'eau pour vous aider à économiser",
+      'onboarding_meter_reading_label': 'Relevé actuel du compteur (m³)',
+      'onboarding_meter_hint_text':
+      'Ce numéro se trouve sur votre compteur d\'eau. Il est généralement affiché en mètres cubes (m³).',
+      'onboarding_reminder_time_label': 'Heure du rappel quotidien',
+      'onboarding_reminder_hint_text':
+      "Nous vous rappellerons quotidiennement d'enregistrer votre relevé de compteur.",
+      // Onboarding – Challenge screen
+      'onboarding_challenge_title': 'Choisissez votre défi',
+      'onboarding_challenge_subtitle': "Commencez à économiser l'eau avec un objectif personnalisé",
+      'onboarding_challenge_weekly_title': 'Défi hebdomadaire',
+      'onboarding_challenge_weekly_desc': "Objectif d'économie d'eau sur 7 jours",
+      'onboarding_challenge_weekly_duration': '1 semaine',
+      'onboarding_challenge_monthly_title': 'Défi mensuel',
+      'onboarding_challenge_monthly_desc': "Objectif d'économie d'eau sur 30 jours",
+      'onboarding_challenge_monthly_duration': '1 mois',
+      'onboarding_challenge_progressive_title': 'Défis progressifs',
+      'onboarding_challenge_progressive_desc':
+      "Chaque fois que vous terminez un défi, votre prochain objectif sera légèrement plus ambitieux, vous aidant à économiser encore plus d'eau !",
+      'onboarding_challenge_start_btn': 'Commencer mon parcours',
     },
   };
 
   String translate(String key) {
     return _localizedValues[languageCode]?[key] ?? key;
+  }
+
+  /// Translates a key and replaces `{placeholder}` tokens with the given args.
+  String translateWithArgs(String key, Map<String, String> args) {
+    String value = translate(key);
+    for (final entry in args.entries) {
+      value = value.replaceAll('{${entry.key}}', entry.value);
+    }
+    return value;
   }
 
   String get appName => translate('app_name');

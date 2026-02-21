@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../../providers/water_provider.dart';
+import '../../l10n/app_localizations.dart';
 import '../../utils/validators.dart';
 
 class OnboardingMeterScreen extends StatefulWidget {
@@ -61,6 +60,7 @@ class _OnboardingMeterScreenState extends State<OnboardingMeterScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -87,9 +87,9 @@ class _OnboardingMeterScreenState extends State<OnboardingMeterScreen> {
                   color: Colors.cyanAccent,
                 ),
                 const SizedBox(height: 24),
-                const Text(
-                  'Set up your water meter',
-                  style: TextStyle(
+                Text(
+                  l10n.translate('onboarding_meter_title'),
+                  style: const TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
@@ -97,7 +97,7 @@ class _OnboardingMeterScreenState extends State<OnboardingMeterScreen> {
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  'We\'ll track your water usage to help you save',
+                  l10n.translate('onboarding_meter_subtitle'),
                   style: TextStyle(
                     fontSize: 16,
                     color: Colors.white.withOpacity(0.7),
@@ -113,7 +113,7 @@ class _OnboardingMeterScreenState extends State<OnboardingMeterScreen> {
                         children: [
                           // Meter Reading Input
                           Text(
-                            'Current Meter Reading (m³)',
+                            l10n.translate('onboarding_meter_reading_label'),
                             style: TextStyle(
                               fontSize: 16,
                               color: Colors.white.withOpacity(0.9),
@@ -177,7 +177,7 @@ class _OnboardingMeterScreenState extends State<OnboardingMeterScreen> {
                                 const SizedBox(width: 12),
                                 Expanded(
                                   child: Text(
-                                    'Find this number on your water meter. It\'s usually displayed in cubic meters (m³).',
+                                    l10n.translate('onboarding_meter_hint_text'),
                                     style: TextStyle(
                                       color: Colors.white.withOpacity(0.9),
                                       fontSize: 12,
@@ -191,7 +191,7 @@ class _OnboardingMeterScreenState extends State<OnboardingMeterScreen> {
 
                           // Notification Time Picker
                           Text(
-                            'Daily Reminder Time',
+                            l10n.translate('onboarding_reminder_time_label'),
                             style: TextStyle(
                               fontSize: 16,
                               color: Colors.white.withOpacity(0.9),
@@ -251,7 +251,7 @@ class _OnboardingMeterScreenState extends State<OnboardingMeterScreen> {
                                 const SizedBox(width: 12),
                                 Expanded(
                                   child: Text(
-                                    'We\'ll remind you daily to record your water meter reading.',
+                                    l10n.translate('onboarding_reminder_hint_text'),
                                     style: TextStyle(
                                       color: Colors.white.withOpacity(0.9),
                                       fontSize: 12,
@@ -278,9 +278,9 @@ class _OnboardingMeterScreenState extends State<OnboardingMeterScreen> {
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    child: const Text(
-                      'Continue',
-                      style: TextStyle(
+                    child: Text(
+                      l10n.translate('continue'),
+                      style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),

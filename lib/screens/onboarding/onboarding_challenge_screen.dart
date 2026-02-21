@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_localizations.dart';
 import '../../models/challenge_model.dart';
 
 class OnboardingChallengeScreen extends StatefulWidget {
@@ -25,6 +26,7 @@ class _OnboardingChallengeScreenState extends State<OnboardingChallengeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -51,9 +53,9 @@ class _OnboardingChallengeScreenState extends State<OnboardingChallengeScreen> {
                   color: Colors.cyanAccent,
                 ),
                 const SizedBox(height: 24),
-                const Text(
-                  'Choose your challenge',
-                  style: TextStyle(
+                Text(
+                  l10n.translate('onboarding_challenge_title'),
+                  style: const TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
@@ -61,7 +63,7 @@ class _OnboardingChallengeScreenState extends State<OnboardingChallengeScreen> {
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  'Start saving water with a personalized goal',
+                  l10n.translate('onboarding_challenge_subtitle'),
                   style: TextStyle(
                     fontSize: 16,
                     color: Colors.white.withOpacity(0.7),
@@ -74,18 +76,18 @@ class _OnboardingChallengeScreenState extends State<OnboardingChallengeScreen> {
                       children: [
                         _buildChallengeCard(
                           type: ChallengeType.weekly,
-                          title: 'Weekly Challenge',
-                          description: '7-day water saving goal',
+                          title: l10n.translate('onboarding_challenge_weekly_title'),
+                          description: l10n.translate('onboarding_challenge_weekly_desc'),
                           icon: Icons.calendar_view_week,
-                          duration: '1 week',
+                          duration: l10n.translate('onboarding_challenge_weekly_duration'),
                         ),
                         const SizedBox(height: 16),
                         _buildChallengeCard(
                           type: ChallengeType.monthly,
-                          title: 'Monthly Challenge',
-                          description: '30-day water saving goal',
+                          title: l10n.translate('onboarding_challenge_monthly_title'),
+                          description: l10n.translate('onboarding_challenge_monthly_desc'),
                           icon: Icons.calendar_month,
-                          duration: '1 month',
+                          duration: l10n.translate('onboarding_challenge_monthly_duration'),
                         ),
                         const SizedBox(height: 24),
                         Container(
@@ -106,7 +108,7 @@ class _OnboardingChallengeScreenState extends State<OnboardingChallengeScreen> {
                               ),
                               const SizedBox(height: 12),
                               Text(
-                                'Progressive Challenges',
+                                l10n.translate('onboarding_challenge_progressive_title'),
                                 style: TextStyle(
                                   color: Colors.white.withOpacity(0.9),
                                   fontSize: 16,
@@ -116,7 +118,7 @@ class _OnboardingChallengeScreenState extends State<OnboardingChallengeScreen> {
                               ),
                               const SizedBox(height: 8),
                               Text(
-                                'Each time you complete a challenge, your next goal will be slightly more ambitious, helping you save even more water!',
+                                l10n.translate('onboarding_challenge_progressive_desc'),
                                 style: TextStyle(
                                   color: Colors.white.withOpacity(0.7),
                                   fontSize: 13,
@@ -146,9 +148,9 @@ class _OnboardingChallengeScreenState extends State<OnboardingChallengeScreen> {
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    child: const Text(
-                      'Start My Journey',
-                      style: TextStyle(
+                    child: Text(
+                      l10n.translate('onboarding_challenge_start_btn'),
+                      style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),

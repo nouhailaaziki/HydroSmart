@@ -1,6 +1,17 @@
 import 'package:flutter/material.dart';
 
 class Validators {
+  static final RegExp _latinOnlyName = RegExp(r'^[a-zA-Z]+(\s[a-zA-Z]+)*$');
+  static final RegExp _arabicOnlyName = RegExp(
+    r'^[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]+'
+    r'(\s[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]+)*$',
+  );
+
+  /// Returns true if [text] matches either the Latin-only or Arabic-only name
+  /// pattern (letters and single spaces, no mixing of scripts).
+  static bool isValidNameScript(String text) =>
+      _latinOnlyName.hasMatch(text) || _arabicOnlyName.hasMatch(text);
+
   // Name Validation - Enhanced
   static String? validateName(String? value) {
     if (value == null || value.trim().isEmpty) {
@@ -24,8 +35,8 @@ class Validators {
       return 'Name cannot contain consecutive spaces';
     }
 
-    // Check for only alphabetic characters and single spaces
-    if (!RegExp(r'^[a-zA-Z]+(\s[a-zA-Z]+)*$').hasMatch(trimmed)) {
+    // Check for only alphabetic characters and single spaces (Latin-only or Arabic-only)
+    if (!Validators.isValidNameScript(trimmed)) {
       return 'Name can only contain letters and single spaces';
     }
 

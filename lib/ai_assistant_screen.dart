@@ -8,6 +8,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/intl.dart';
+import 'providers/language_provider.dart';
 import 'providers/water_provider.dart';
 import 'l10n/app_localizations.dart';
 
@@ -22,10 +23,19 @@ class _AIAssistantScreenState extends State<AIAssistantScreen> {
   String _searchQuery = "";
   final TextEditingController _searchController = TextEditingController();
   final Box _historyBox = Hive.box('chat_history');
-  final Map<String, String> _systemPrompt = {
-    'role': 'system',
-    'content': 'You are Hydrosmart AI, a helpful water-saving assistant for Morocco.'
-  };
+  static const String _baseSystemContent =
+      'You are Hydrosmart AI, a helpful water-saving assistant for Morocco.';
+
+  static String _languageNameForCode(String code) {
+    switch (code) {
+      case 'fr':
+        return 'French';
+      case 'ar':
+        return 'Arabic';
+      default:
+        return 'English';
+    }
+  }
 
   List<Map<String, String>> _messages = [];
   String? _currentChatKey;
@@ -33,18 +43,48 @@ class _AIAssistantScreenState extends State<AIAssistantScreen> {
   final ScrollController _scrollController = ScrollController();
   bool _isLoading = false;
 
+  bool _initialChatSetup = false;
+  String? _greetingLanguageCode;
+
   @override
   void initState() {
     super.initState();
-    _setupInitialChat();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_initialChatSetup) {
+      _initialChatSetup = true;
+      _setupInitialChat();
+    } else {
+      _updateGreetingIfNeeded();
+    }
   }
 
   void _setupInitialChat() {
+    final l10n = AppLocalizations.of(context);
     setState(() {
+      _greetingLanguageCode = l10n.languageCode;
       _messages = [
-        {'role': 'assistant', 'content': 'Hello! How can I help you save water today?'}
+        {'role': 'assistant', 'content': l10n.translate('ai_greeting')}
       ];
     });
+  }
+
+  void _updateGreetingIfNeeded() {
+    final l10n = AppLocalizations.of(context);
+    if (_greetingLanguageCode != null &&
+        _greetingLanguageCode != l10n.languageCode &&
+        _messages.length == 1 &&
+        _messages[0]['role'] == 'assistant') {
+      setState(() {
+        _greetingLanguageCode = l10n.languageCode;
+        _messages = [
+          {'role': 'assistant', 'content': l10n.translate('ai_greeting')}
+        ];
+      });
+    }
   }
 
   void _scrollToBottom() {
@@ -59,7 +99,7 @@ class _AIAssistantScreenState extends State<AIAssistantScreen> {
     final date = DateTime.parse(timestamp);
     final now = DateTime.now();
     if (date.day == now.day && date.month == now.month && date.year == now.year) {
-      return "Today";
+      return AppLocalizations.of(context).translate('today');
     }
     return DateFormat('yMMMd').format(date);
   }
@@ -163,9 +203,10 @@ class _AIAssistantScreenState extends State<AIAssistantScreen> {
 
   void _startNewChat() {
     _saveCurrentChat();
+    final l10n = AppLocalizations.of(context);
     setState(() {
       _currentChatKey = null;
-      _messages = [{'role': 'assistant', 'content': 'New session. How can I help?'}];
+      _messages = [{'role': 'assistant', 'content': l10n.translate('ai_new_session')}];
     });
     if (Scaffold.of(context).isDrawerOpen) Navigator.pop(context);
   }
@@ -184,8 +225,10 @@ class _AIAssistantScreenState extends State<AIAssistantScreen> {
 
     try {
       final apiKey = dotenv.env['GROQ_API_KEY'] ?? "";
+      final langCode = Provider.of<LanguageProvider>(context, listen: false).currentLanguage;
+      final langName = _languageNameForCode(langCode);
       List<Map<String, String>> historyForAI = [
-        _systemPrompt,
+        {'role': 'system', 'content': '$_baseSystemContent Always respond in $langName.'},
         {'role': 'system', 'content': 'Context: Usage ${waterData.currentUsage}L/${waterData.weeklyGoal}L.'},
         ..._messages.reversed
       ];
@@ -251,6 +294,7 @@ class _AIAssistantScreenState extends State<AIAssistantScreen> {
 
   Widget _buildChatDrawer() {
     final allKeys = _historyBox.keys.toList().reversed.toList();
+    final l10n = AppLocalizations.of(context);
 
     final filteredKeys = allKeys.where((key) {
       final chat = _historyBox.get(key);
@@ -268,7 +312,7 @@ class _AIAssistantScreenState extends State<AIAssistantScreen> {
               child: ElevatedButton.icon(
                 onPressed: _startNewChat,
                 icon: const Icon(Icons.add, color: Colors.black),
-                label: const Text("New Chat", style: TextStyle(color: Colors.black)),
+                label: Text(l10n.translate('ai_new_chat'), style: const TextStyle(color: Colors.black)),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.cyanAccent,
                   minimumSize: const Size(double.infinity, 50),
@@ -287,7 +331,7 @@ class _AIAssistantScreenState extends State<AIAssistantScreen> {
                   });
                 },
                 decoration: InputDecoration(
-                  hintText: "Search chats...",
+                  hintText: l10n.translate('ai_search_chats'),
                   hintStyle: const TextStyle(color: Colors.white38),
                   prefixIcon: const Icon(Icons.search, color: Colors.white38),
                   suffixIcon: _searchQuery.isNotEmpty
@@ -315,7 +359,11 @@ class _AIAssistantScreenState extends State<AIAssistantScreen> {
 
             Expanded(
               child: filteredKeys.isEmpty
-                  ? Center(child: Text(_searchQuery.isEmpty ? "No chats yet" : "No results found", style: const TextStyle(color: Colors.white38)))
+                  ? Center(child: Text(
+                  _searchQuery.isEmpty
+                      ? l10n.translate('ai_no_chats_yet')
+                      : l10n.translate('ai_no_results_found'),
+                  style: const TextStyle(color: Colors.white38)))
                   : ListView.builder(
                 itemCount: filteredKeys.length,
                 itemBuilder: (context, index) {

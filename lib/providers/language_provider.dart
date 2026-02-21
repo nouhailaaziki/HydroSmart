@@ -21,11 +21,9 @@ class LanguageProvider with ChangeNotifier {
 
   bool get isRTL => _currentLanguage == 'ar';
 
-  LanguageProvider() {
-    _loadLanguage();
-  }
+  LanguageProvider();
 
-  Future<void> _loadLanguage() async {
+  Future<void> initialize() async {
     try {
       final box = await Hive.openBox('settings');
       _hasSelectedLanguage = box.containsKey('language');
@@ -38,12 +36,14 @@ class LanguageProvider with ChangeNotifier {
   }
 
   Future<void> setLanguage(String languageCode) async {
+    // Update state and notify immediately for instant UI rebuild
+    _currentLanguage = languageCode;
+    _hasSelectedLanguage = true;
+    notifyListeners();
+    // Persist in background
     try {
       final box = await Hive.openBox('settings');
       await box.put('language', languageCode);
-      _currentLanguage = languageCode;
-      _hasSelectedLanguage = true;
-      notifyListeners();
     } catch (e) {
       debugPrint('Error saving language: $e');
     }

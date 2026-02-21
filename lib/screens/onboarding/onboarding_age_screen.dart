@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_localizations.dart';
 import '../../utils/validators.dart';
 
 class OnboardingAgeScreen extends StatefulWidget {
@@ -34,6 +35,7 @@ class _OnboardingAgeScreenState extends State<OnboardingAgeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -61,7 +63,7 @@ class _OnboardingAgeScreenState extends State<OnboardingAgeScreen> {
                 ),
                 const SizedBox(height: 24),
                 Text(
-                  'Hi ${widget.userName}!',
+                  '${l10n.translate('onboarding_age_greeting')} ${widget.userName}!',
                   style: const TextStyle(
                     fontSize: 32,
                     fontWeight: FontWeight.bold,
@@ -70,7 +72,7 @@ class _OnboardingAgeScreenState extends State<OnboardingAgeScreen> {
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  'What\'s your age?',
+                  l10n.translate('onboarding_age_title'),
                   style: TextStyle(
                     fontSize: 20,
                     color: Colors.white.withOpacity(0.7),
@@ -88,7 +90,7 @@ class _OnboardingAgeScreenState extends State<OnboardingAgeScreen> {
                       fontWeight: FontWeight.bold,
                     ),
                     decoration: InputDecoration(
-                      hintText: 'Your age',
+                      hintText: l10n.translate('onboarding_age_hint'),
                       hintStyle: TextStyle(
                         color: Colors.white.withOpacity(0.5),
                       ),
@@ -130,9 +132,9 @@ class _OnboardingAgeScreenState extends State<OnboardingAgeScreen> {
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    child: const Text(
-                      'Continue',
-                      style: TextStyle(
+                    child: Text(
+                      l10n.translate('continue'),
+                      style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),

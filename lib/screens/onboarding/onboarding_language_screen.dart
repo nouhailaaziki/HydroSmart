@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../../providers/language_provider.dart';
+import '../../l10n/app_localizations.dart';
 
 class LanguageSelectionScreen extends StatefulWidget {
   final VoidCallback onLanguageSelected;
@@ -25,10 +26,18 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
 
   Future<void> _confirmSelection() async {
     if (_selectedLanguage == null) return;
-    final languageProvider =
-    Provider.of<LanguageProvider>(context, listen: false);
-    await languageProvider.setLanguage(_selectedLanguage!);
+
+    // Apply + persist ONLY when user confirms.
+    await Provider.of<LanguageProvider>(context, listen: false)
+        .setLanguage(_selectedLanguage!);
+
     widget.onLanguageSelected();
+  }
+
+  void _selectLanguage(String languageCode) {
+    // Only update local selection state on tap.
+    // Do NOT call languageProvider.setLanguage here, otherwise onboarding advances immediately.
+    setState(() => _selectedLanguage = languageCode);
   }
 
   @override
@@ -49,7 +58,6 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 const Spacer(),
-                // App icon / logo area
                 Center(
                   child: Container(
                     width: 80,
@@ -71,7 +79,8 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
                 ),
                 const SizedBox(height: 24),
                 Text(
-                  'Welcome to HydroSmart',
+                  AppLocalizations.of(context)
+                      .translate('onboarding_welcome_title'),
                   style: GoogleFonts.poppins(
                     color: Colors.white,
                     fontSize: 26,
@@ -81,7 +90,8 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Choose your preferred language\nChoisissez votre langue\nاختر لغتك',
+                  AppLocalizations.of(context)
+                      .translate('onboarding_language_prompt'),
                   style: GoogleFonts.poppins(
                     color: Colors.white70,
                     fontSize: 14,
@@ -93,18 +103,20 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
                 ...(_languages.map((lang) => _buildLanguageTile(lang))),
                 const Spacer(),
                 ElevatedButton(
-                  onPressed: _selectedLanguage != null ? _confirmSelection : null,
+                  onPressed:
+                  _selectedLanguage != null ? _confirmSelection : null,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.cyanAccent,
                     foregroundColor: Colors.black,
-                    disabledBackgroundColor: Colors.cyanAccent.withOpacity(0.3),
+                    disabledBackgroundColor:
+                    Colors.cyanAccent.withOpacity(0.3),
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
                   child: Text(
-                    'Continue / Continuer / متابعة',
+                    AppLocalizations.of(context).translate('continue'),
                     style: GoogleFonts.poppins(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
@@ -123,7 +135,7 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
   Widget _buildLanguageTile(Map<String, String> lang) {
     final isSelected = _selectedLanguage == lang['code'];
     return GestureDetector(
-      onTap: () => setState(() => _selectedLanguage = lang['code']),
+      onTap: () => _selectLanguage(lang['code']!),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         margin: const EdgeInsets.only(bottom: 12),
@@ -170,7 +182,8 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
               ),
             ),
             if (isSelected)
-              const Icon(Icons.check_circle, color: Colors.cyanAccent, size: 24),
+              const Icon(Icons.check_circle,
+                  color: Colors.cyanAccent, size: 24),
           ],
         ),
       ),

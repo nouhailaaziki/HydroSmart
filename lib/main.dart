@@ -36,16 +36,18 @@ Future<void> main() async {
 
   final authProvider = AuthProvider();
   final waterProvider = WaterProvider();
+  final languageProvider = LanguageProvider();
 
   await authProvider.initialize();
   await waterProvider.initialize();
+  await languageProvider.initialize();
 
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider.value(value: waterProvider),
         ChangeNotifierProvider.value(value: authProvider),
-        ChangeNotifierProvider(create: (_) => LanguageProvider()),
+        ChangeNotifierProvider.value(value: languageProvider),
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
       ],
       child: const HydrosmartApp(),
@@ -90,6 +92,13 @@ class HydrosmartApp extends StatelessWidget {
         Locale('ar', ''),
         Locale('fr', ''),
       ],
+      builder: (context, child) {
+        return Directionality(
+          textDirection:
+          languageProvider.isRTL ? TextDirection.rtl : TextDirection.ltr,
+          child: child!,
+        );
+      },
       home: home,
     );
   }

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
@@ -118,23 +120,30 @@ class _OnboardingFlowScreenState extends State<OnboardingFlowScreen> {
     bool loadingShown = false;
     bool hasErrors = false;
 
+    // Capture the root navigator and providers before any async gaps so that
+    // stale BuildContext issues cannot occur after awaits.
+    final rootNavigator = Navigator.of(context, rootNavigator: true);
+    final authProvider = context.read<AuthProvider>();
+    final waterProvider = context.read<WaterProvider>();
+
     try {
-      // Show loading
-      if (mounted) {
-        showDialog(
-          context: context,
-          barrierDismissible: true,
-          builder: (context) => const Center(
+      // Show non-dismissible loading dialog via the root navigator so that
+      // rootNavigator.pop() always targets it.  PopScope prevents the back
+      // button from dismissing the overlay mid-completion.
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        useRootNavigator: true,
+        builder: (_) => const PopScope(
+          canPop: false,
+          child: Center(
             child: CircularProgressIndicator(
               color: Colors.cyanAccent,
             ),
           ),
-        );
-        loadingShown = true;
-      }
-
-      final authProvider = context.read<AuthProvider>();
-      final waterProvider = context.read<WaterProvider>();
+        ),
+      );
+      loadingShown = true;
 
       // Update auth provider with onboarding data
       try {
@@ -177,64 +186,48 @@ class _OnboardingFlowScreenState extends State<OnboardingFlowScreen> {
         debugPrint('Error starting challenge: $e');
         hasErrors = true;
       }
-
-      // Close loading dialog
-      if (mounted && loadingShown) {
-        Navigator.of(context).pop();
-        loadingShown = false;
-      }
-
-      // Show appropriate message
-      if (mounted) {
-        if (hasErrors) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Setup completed with some errors. You can continue using the app.'),
-              backgroundColor: Colors.orange,
-              duration: Duration(seconds: 3),
-            ),
-          );
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Welcome to Hydrosmart! 🎉'),
-              backgroundColor: Colors.green,
-              duration: Duration(seconds: 2),
-            ),
-          );
-        }
-      }
-
-      // **CRITICAL FIX**: Navigate to home screen after short delay
-      if (mounted) {
-        await _navigateToHome();
-      }
     } catch (e) {
       debugPrint('Error in _completeOnboarding: $e');
-
-      // Close loading dialog if open
-      if (mounted && loadingShown) {
-        try {
-          Navigator.of(context).pop();
-          loadingShown = false;
-        } catch (e) {
-          debugPrint('Error closing loading dialog: $e');
+      hasErrors = true;
+    } finally {
+      // Always close the loading dialog using the pre-captured root navigator
+      // so the correct route is targeted regardless of any widget rebuilds.
+      if (loadingShown) {
+        if (rootNavigator.canPop()) {
+          rootNavigator.pop();
+          debugPrint('Onboarding loading dialog dismissed.');
+        } else {
+          debugPrint('Warning: onboarding dialog shown but canPop() is false.');
         }
       }
+    }
 
-      // Show error message
-      if (mounted) {
+    // Wait for the post-frame callback so the dialog route has been fully
+    // removed from the navigator stack before we push the home screen.
+    final frameCompleter = Completer<void>();
+    WidgetsBinding.instance.addPostFrameCallback((_) => frameCompleter.complete());
+    await frameCompleter.future;
+
+    // Show appropriate message and navigate only after the dialog is closed.
+    if (mounted) {
+      if (hasErrors) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Setup completed with some errors. You can continue using the app.'),
             backgroundColor: Colors.orange,
-            duration: Duration(seconds: 4),
+            duration: Duration(seconds: 3),
           ),
         );
-
-        // **CRITICAL FIX**: Navigate even on error (non-blocking)
-        await _navigateToHome();
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Welcome to Hydrosmart! 🎉'),
+            backgroundColor: Colors.green,
+            duration: Duration(seconds: 2),
+          ),
+        );
       }
+      await _navigateToHome();
     }
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
+import '../../l10n/app_localizations.dart';
 import '../../models/household_member_model.dart';
 import '../../utils/validators.dart';
 
@@ -80,6 +81,7 @@ class _OnboardingHouseholdScreenState extends State<OnboardingHouseholdScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -106,9 +108,9 @@ class _OnboardingHouseholdScreenState extends State<OnboardingHouseholdScreen> {
                   color: Colors.cyanAccent,
                 ),
                 const SizedBox(height: 24),
-                const Text(
-                  'Tell us about your household',
-                  style: TextStyle(
+                Text(
+                  l10n.translate('onboarding_household_title'),
+                  style: const TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
@@ -116,7 +118,7 @@ class _OnboardingHouseholdScreenState extends State<OnboardingHouseholdScreen> {
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  'This helps us estimate your water usage',
+                  l10n.translate('onboarding_household_subtitle'),
                   style: TextStyle(
                     fontSize: 16,
                     color: Colors.white.withOpacity(0.7),
@@ -131,7 +133,7 @@ class _OnboardingHouseholdScreenState extends State<OnboardingHouseholdScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'How many people live in your household?',
+                            l10n.translate('onboarding_household_size_question'),
                             style: TextStyle(
                               fontSize: 16,
                               color: Colors.white.withOpacity(0.9),
@@ -164,7 +166,7 @@ class _OnboardingHouseholdScreenState extends State<OnboardingHouseholdScreen> {
                           const SizedBox(height: 32),
                           if (_householdSize > 1) ...[
                             Text(
-                              'Age of other household members',
+                              l10n.translate('onboarding_household_members_age_title'),
                               style: TextStyle(
                                 fontSize: 16,
                                 color: Colors.white.withOpacity(0.9),
@@ -180,7 +182,10 @@ class _OnboardingHouseholdScreenState extends State<OnboardingHouseholdScreen> {
                                   keyboardType: TextInputType.number,
                                   style: const TextStyle(color: Colors.white),
                                   decoration: InputDecoration(
-                                    labelText: 'Member ${index + 2} Age',
+                                    labelText: l10n.translateWithArgs(
+                                      'onboarding_household_member_age_label',
+                                      {'n': '${index + 2}'},
+                                    ),
                                     labelStyle: TextStyle(
                                       color: Colors.white.withOpacity(0.7),
                                     ),
@@ -226,9 +231,9 @@ class _OnboardingHouseholdScreenState extends State<OnboardingHouseholdScreen> {
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    child: const Text(
-                      'Continue',
-                      style: TextStyle(
+                    child: Text(
+                      l10n.translate('continue'),
+                      style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_localizations.dart';
 import '../../utils/validators.dart';
 
 class OnboardingNameScreen extends StatefulWidget {
@@ -46,6 +47,7 @@ class _OnboardingNameScreenState extends State<OnboardingNameScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -68,9 +70,9 @@ class _OnboardingNameScreenState extends State<OnboardingNameScreen> {
                   color: Colors.cyanAccent,
                 ),
                 const SizedBox(height: 24),
-                const Text(
-                  'What\'s your name?',
-                  style: TextStyle(
+                Text(
+                  l10n.translate('onboarding_name_title'),
+                  style: const TextStyle(
                     fontSize: 32,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
@@ -78,7 +80,7 @@ class _OnboardingNameScreenState extends State<OnboardingNameScreen> {
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  'Let\'s personalize your water-saving journey',
+                  l10n.translate('onboarding_name_subtitle'),
                   style: TextStyle(
                     fontSize: 16,
                     color: Colors.white.withOpacity(0.7),
@@ -97,7 +99,7 @@ class _OnboardingNameScreenState extends State<OnboardingNameScreen> {
                           fontSize: 18,
                         ),
                         decoration: InputDecoration(
-                          hintText: 'Enter your full name',
+                          hintText: l10n.translate('onboarding_name_hint'),
                           hintStyle: TextStyle(
                             color: Colors.white.withOpacity(0.5),
                           ),
@@ -130,11 +132,11 @@ class _OnboardingNameScreenState extends State<OnboardingNameScreen> {
                           ),
                           suffixIcon: _nameController.text.isNotEmpty
                               ? Icon(
-                                  _isValid ? Icons.check_circle : Icons.error,
-                                  color: _isValid
-                                      ? Colors.greenAccent
-                                      : Colors.redAccent,
-                                )
+                            _isValid ? Icons.check_circle : Icons.error,
+                            color: _isValid
+                                ? Colors.greenAccent
+                                : Colors.redAccent,
+                          )
                               : null,
                         ),
                         validator: Validators.validateName,
@@ -160,17 +162,17 @@ class _OnboardingNameScreenState extends State<OnboardingNameScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             _buildRule(
-                              'Only letters and single spaces',
+                              l10n.translate('onboarding_name_rule_letters'),
                               _nameController.text.isEmpty ||
-                                  RegExp(r'^[a-zA-Z]+(\s[a-zA-Z]+)*$')
-                                      .hasMatch(_nameController.text.trim()),
+                                  Validators.isValidNameScript(
+                                      _nameController.text.trim()),
                             ),
                             _buildRule(
-                              'At least 2 characters',
+                              l10n.translate('onboarding_name_rule_min_length'),
                               _nameController.text.trim().length >= 2,
                             ),
                             _buildRule(
-                              'No spaces at start or end',
+                              l10n.translate('onboarding_name_rule_no_spaces'),
                               _nameController.text.isEmpty ||
                                   (!_nameController.text.startsWith(' ') &&
                                       !_nameController.text.endsWith(' ')),
@@ -189,16 +191,16 @@ class _OnboardingNameScreenState extends State<OnboardingNameScreen> {
                     onPressed: _isValid ? _submit : null,
                     style: ElevatedButton.styleFrom(
                       backgroundColor:
-                          _isValid ? Colors.cyanAccent : Colors.grey,
+                      _isValid ? Colors.cyanAccent : Colors.grey,
                       foregroundColor: Colors.black,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
                       elevation: 0,
                     ),
-                    child: const Text(
-                      'Continue',
-                      style: TextStyle(
+                    child: Text(
+                      l10n.translate('continue'),
+                      style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../l10n/app_localizations.dart';
+import '../../theme/app_colors.dart';
 import '../../utils/validators.dart';
 
 class OnboardingNameScreen extends StatefulWidget {
@@ -51,11 +53,7 @@ class _OnboardingNameScreenState extends State<OnboardingNameScreen> {
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Color(0xFF0D47A1), Color(0xFF001529)],
-          ),
+          gradient: AppColors.backgroundGradient,
         ),
         child: SafeArea(
           child: Padding(
@@ -64,26 +62,46 @@ class _OnboardingNameScreenState extends State<OnboardingNameScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 40),
-                const Icon(
-                  Icons.person_outline,
-                  size: 64,
-                  color: Colors.cyanAccent,
+                Container(
+                  width: 64,
+                  height: 64,
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [AppColors.primary, AppColors.primaryDark],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.primary.withOpacity(0.4),
+                        blurRadius: 16,
+                        offset: const Offset(0, 6),
+                      ),
+                    ],
+                  ),
+                  child: const Icon(
+                    Icons.person_outline,
+                    size: 32,
+                    color: Colors.white,
+                  ),
                 ),
                 const SizedBox(height: 24),
                 Text(
                   l10n.translate('onboarding_name_title'),
-                  style: const TextStyle(
+                  style: GoogleFonts.poppins(
                     fontSize: 32,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w700,
                     color: Colors.white,
+                    letterSpacing: -0.5,
                   ),
                 ),
                 const SizedBox(height: 12),
                 Text(
                   l10n.translate('onboarding_name_subtitle'),
-                  style: TextStyle(
+                  style: GoogleFonts.poppins(
                     fontSize: 16,
-                    color: Colors.white.withOpacity(0.7),
+                    color: Colors.white60,
                   ),
                 ),
                 const SizedBox(height: 48),
@@ -94,37 +112,37 @@ class _OnboardingNameScreenState extends State<OnboardingNameScreen> {
                     children: [
                       TextFormField(
                         controller: _nameController,
-                        style: const TextStyle(
+                        style: GoogleFonts.poppins(
                           color: Colors.white,
                           fontSize: 18,
                         ),
                         decoration: InputDecoration(
                           hintText: l10n.translate('onboarding_name_hint'),
-                          hintStyle: TextStyle(
-                            color: Colors.white.withOpacity(0.5),
+                          hintStyle: GoogleFonts.poppins(
+                            color: Colors.white38,
                           ),
                           filled: true,
-                          fillColor: Colors.white.withOpacity(0.1),
+                          fillColor: Colors.white.withOpacity(0.08),
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(16),
                             borderSide: BorderSide.none,
                           ),
                           enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(16),
                             borderSide: BorderSide(
-                              color: Colors.cyanAccent.withOpacity(0.3),
+                              color: AppColors.primary.withOpacity(0.3),
                               width: 1,
                             ),
                           ),
                           focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(16),
                             borderSide: const BorderSide(
-                              color: Colors.cyanAccent,
+                              color: AppColors.primary,
                               width: 2,
                             ),
                           ),
                           errorBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(16),
                             borderSide: const BorderSide(
                               color: Colors.redAccent,
                               width: 2,
@@ -132,11 +150,11 @@ class _OnboardingNameScreenState extends State<OnboardingNameScreen> {
                           ),
                           suffixIcon: _nameController.text.isNotEmpty
                               ? Icon(
-                            _isValid ? Icons.check_circle : Icons.error,
-                            color: _isValid
-                                ? Colors.greenAccent
-                                : Colors.redAccent,
-                          )
+                                  _isValid ? Icons.check_circle : Icons.error,
+                                  color: _isValid
+                                      ? AppColors.success
+                                      : Colors.redAccent,
+                                )
                               : null,
                         ),
                         validator: Validators.validateName,
@@ -149,7 +167,7 @@ class _OnboardingNameScreenState extends State<OnboardingNameScreen> {
                           padding: const EdgeInsets.only(top: 8, left: 12),
                           child: Text(
                             _validationMessage!,
-                            style: const TextStyle(
+                            style: GoogleFonts.poppins(
                               color: Colors.redAccent,
                               fontSize: 12,
                             ),
@@ -184,31 +202,53 @@ class _OnboardingNameScreenState extends State<OnboardingNameScreen> {
                   ),
                 ),
                 const Spacer(),
-                SizedBox(
-                  width: double.infinity,
-                  height: 56,
-                  child: ElevatedButton(
-                    onPressed: _isValid ? _submit : null,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor:
-                      _isValid ? Colors.cyanAccent : Colors.grey,
-                      foregroundColor: Colors.black,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      elevation: 0,
-                    ),
-                    child: Text(
-                      l10n.translate('continue'),
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
+                _buildContinueButton(l10n),
                 const SizedBox(height: 16),
               ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildContinueButton(AppLocalizations l10n) {
+    return Material(
+      color: Colors.transparent,
+      borderRadius: BorderRadius.circular(16),
+      child: InkWell(
+        onTap: _isValid ? _submit : null,
+        borderRadius: BorderRadius.circular(16),
+        child: Ink(
+          height: 56,
+          decoration: BoxDecoration(
+            gradient: _isValid
+                ? const LinearGradient(
+                    colors: [AppColors.primary, AppColors.primaryDark],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  )
+                : null,
+            color: _isValid ? null : Colors.grey.withOpacity(0.4),
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: _isValid
+                ? [
+                    BoxShadow(
+                      color: AppColors.primary.withOpacity(0.35),
+                      blurRadius: 16,
+                      offset: const Offset(0, 6),
+                    ),
+                  ]
+                : null,
+          ),
+          child: Center(
+            child: Text(
+              l10n.translate('continue'),
+              style: GoogleFonts.poppins(
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+                color: Colors.white,
+              ),
             ),
           ),
         ),
@@ -224,14 +264,14 @@ class _OnboardingNameScreenState extends State<OnboardingNameScreen> {
           Icon(
             isValid ? Icons.check : Icons.circle_outlined,
             size: 16,
-            color: isValid ? Colors.greenAccent : Colors.white.withOpacity(0.5),
+            color: isValid ? AppColors.success : Colors.white38,
           ),
           const SizedBox(width: 8),
           Text(
             text,
-            style: TextStyle(
+            style: GoogleFonts.poppins(
               fontSize: 12,
-              color: isValid ? Colors.greenAccent : Colors.white.withOpacity(0.5),
+              color: isValid ? AppColors.success : Colors.white38,
             ),
           ),
         ],

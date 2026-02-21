@@ -120,7 +120,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
           Text(
             title,
             style: GoogleFonts.poppins(
-              color: isDate ? Colors.white54 : Colors.cyanAccent,
+              color: isDate ? Colors.white54 : AppColors.primary,
               fontSize: isDate ? 13 : 16,
               fontWeight: isDate ? FontWeight.normal : FontWeight.w600,
             ),

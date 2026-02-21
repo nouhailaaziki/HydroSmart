@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../theme/app_colors.dart';
 import 'package:provider/provider.dart';
 import '../providers/water_provider.dart';
 import '../utils/validators.dart';
@@ -73,7 +74,7 @@ class _DailyMeterInputScreenState extends State<DailyMeterInputScreen> {
     final lastReading = waterProvider.lastMeterReading;
 
     return Scaffold(
-      backgroundColor: const Color(0xFF001529),
+      backgroundColor: AppColors.backgroundDark,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -88,7 +89,7 @@ class _DailyMeterInputScreenState extends State<DailyMeterInputScreen> {
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [Color(0xFF0D47A1), Color(0xFF001529)],
+            colors: [AppColors.navyMid, AppColors.backgroundDark],
           ),
         ),
         child: SafeArea(
@@ -100,7 +101,7 @@ class _DailyMeterInputScreenState extends State<DailyMeterInputScreen> {
                 const Icon(
                   Icons.water_drop_outlined,
                   size: 64,
-                  color: Colors.cyanAccent,
+                  color: AppColors.primary,
                 ),
                 const SizedBox(height: 24),
                 const Text(
@@ -124,17 +125,17 @@ class _DailyMeterInputScreenState extends State<DailyMeterInputScreen> {
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: Colors.cyanAccent.withOpacity(0.1),
+                      color: AppColors.primary.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
-                        color: Colors.cyanAccent.withOpacity(0.3),
+                        color: AppColors.primary.withOpacity(0.3),
                       ),
                     ),
                     child: Row(
                       children: [
                         const Icon(
                           Icons.history,
-                          color: Colors.cyanAccent,
+                          color: AppColors.primary,
                         ),
                         const SizedBox(width: 12),
                         Expanded(
@@ -175,7 +176,7 @@ class _DailyMeterInputScreenState extends State<DailyMeterInputScreen> {
                               Text(
                                 '${lastReading.dailyConsumption!.toStringAsFixed(2)} m³',
                                 style: const TextStyle(
-                                  color: Colors.cyanAccent,
+                                  color: AppColors.primary,
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -204,7 +205,7 @@ class _DailyMeterInputScreenState extends State<DailyMeterInputScreen> {
                       ),
                       suffixText: 'm³',
                       suffixStyle: const TextStyle(
-                        color: Colors.cyanAccent,
+                        color: AppColors.primary,
                         fontSize: 20,
                       ),
                       filled: true,
@@ -216,13 +217,13 @@ class _DailyMeterInputScreenState extends State<DailyMeterInputScreen> {
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide(
-                          color: Colors.cyanAccent.withOpacity(0.3),
+                          color: AppColors.primary.withOpacity(0.3),
                         ),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: const BorderSide(
-                          color: Colors.cyanAccent,
+                          color: AppColors.primary,
                           width: 2,
                         ),
                       ),
@@ -267,7 +268,7 @@ class _DailyMeterInputScreenState extends State<DailyMeterInputScreen> {
                   child: ElevatedButton(
                     onPressed: _isLoading ? null : _submit,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.cyanAccent,
+                      backgroundColor: AppColors.primary,
                       foregroundColor: Colors.black,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),

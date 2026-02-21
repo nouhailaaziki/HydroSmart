@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../../providers/language_provider.dart';
 import '../../l10n/app_localizations.dart';
+import '../../theme/app_colors.dart';
 
 class LanguageSelectionScreen extends StatefulWidget {
   final VoidCallback onLanguageSelected;
@@ -45,11 +46,7 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Color(0xFF0D47A1), Color(0xFF001529)],
-          ),
+          gradient: AppColors.backgroundGradient,
         ),
         child: SafeArea(
           child: Padding(
@@ -63,16 +60,23 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
                     width: 80,
                     height: 80,
                     decoration: BoxDecoration(
-                      color: Colors.cyanAccent.withOpacity(0.2),
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: Colors.cyanAccent.withOpacity(0.5),
-                        width: 2,
+                      gradient: const LinearGradient(
+                        colors: [AppColors.primary, AppColors.primaryDark],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
                       ),
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.primary.withOpacity(0.4),
+                          blurRadius: 20,
+                          offset: const Offset(0, 8),
+                        ),
+                      ],
                     ),
                     child: const Icon(
                       Icons.water_drop,
-                      color: Colors.cyanAccent,
+                      color: Colors.white,
                       size: 40,
                     ),
                   ),
@@ -84,7 +88,8 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
                   style: GoogleFonts.poppins(
                     color: Colors.white,
                     fontSize: 26,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: -0.3,
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -93,7 +98,7 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
                   AppLocalizations.of(context)
                       .translate('onboarding_language_prompt'),
                   style: GoogleFonts.poppins(
-                    color: Colors.white70,
+                    color: Colors.white60,
                     fontSize: 14,
                     height: 1.6,
                   ),
@@ -102,29 +107,54 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
                 const Spacer(),
                 ...(_languages.map((lang) => _buildLanguageTile(lang))),
                 const Spacer(),
-                ElevatedButton(
-                  onPressed:
-                  _selectedLanguage != null ? _confirmSelection : null,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.cyanAccent,
-                    foregroundColor: Colors.black,
-                    disabledBackgroundColor:
-                    Colors.cyanAccent.withOpacity(0.3),
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child: Text(
-                    AppLocalizations.of(context).translate('continue'),
-                    style: GoogleFonts.poppins(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                ),
+                _buildContinueButton(),
                 const SizedBox(height: 16),
               ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildContinueButton() {
+    final isEnabled = _selectedLanguage != null;
+    return Material(
+      color: Colors.transparent,
+      borderRadius: BorderRadius.circular(16),
+      child: InkWell(
+        onTap: isEnabled ? _confirmSelection : null,
+        borderRadius: BorderRadius.circular(16),
+        child: Ink(
+          height: 56,
+          decoration: BoxDecoration(
+            gradient: isEnabled
+                ? const LinearGradient(
+                    colors: [AppColors.primary, AppColors.primaryDark],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  )
+                : null,
+            color: isEnabled ? null : AppColors.primary.withOpacity(0.3),
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: isEnabled
+                ? [
+                    BoxShadow(
+                      color: AppColors.primary.withOpacity(0.35),
+                      blurRadius: 16,
+                      offset: const Offset(0, 6),
+                    ),
+                  ]
+                : null,
+          ),
+          child: Center(
+            child: Text(
+              AppLocalizations.of(context).translate('continue'),
+              style: GoogleFonts.poppins(
+                fontWeight: FontWeight.w700,
+                fontSize: 16,
+                color: isEnabled ? Colors.white : Colors.white54,
+              ),
             ),
           ),
         ),
@@ -142,12 +172,12 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         decoration: BoxDecoration(
           color: isSelected
-              ? Colors.cyanAccent.withOpacity(0.15)
-              : Colors.white.withOpacity(0.05),
-          borderRadius: BorderRadius.circular(14),
+              ? AppColors.primary.withOpacity(0.15)
+              : Colors.white.withOpacity(0.06),
+          borderRadius: BorderRadius.circular(16),
           border: Border.all(
             color: isSelected
-                ? Colors.cyanAccent
+                ? AppColors.primary
                 : Colors.white.withOpacity(0.15),
             width: isSelected ? 2 : 1,
           ),
@@ -183,7 +213,7 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
             ),
             if (isSelected)
               const Icon(Icons.check_circle,
-                  color: Colors.cyanAccent, size: 24),
+                  color: AppColors.primary, size: 24),
           ],
         ),
       ),

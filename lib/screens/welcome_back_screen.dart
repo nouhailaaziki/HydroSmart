@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../theme/app_colors.dart';
 import 'package:provider/provider.dart';
 import '../providers/water_provider.dart';
 import '../utils/validators.dart';
@@ -74,13 +75,13 @@ class _WelcomeBackScreenState extends State<WelcomeBackScreen> {
     return WillPopScope(
       onWillPop: () async => false, // Prevent dismissing without submitting
       child: Scaffold(
-        backgroundColor: const Color(0xFF001529),
+        backgroundColor: const Color(0xFF0A1628),
         body: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [Color(0xFF0D47A1), Color(0xFF001529)],
+              colors: [Color(0xFF0D2137), Color(0xFF0A1628)],
             ),
           ),
           child: SafeArea(
@@ -91,9 +92,9 @@ class _WelcomeBackScreenState extends State<WelcomeBackScreen> {
                 children: [
                   const SizedBox(height: 40),
                   const Icon(
-                    Icons.waving_hand,
+                    Icons.waving_hand_rounded,
                     size: 64,
-                    color: Colors.cyanAccent,
+                    color: Color(0xFF00C6D7),
                   ),
                   const SizedBox(height: 24),
                   const Text(
@@ -116,10 +117,10 @@ class _WelcomeBackScreenState extends State<WelcomeBackScreen> {
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: Colors.cyanAccent.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(12),
+                      color: const Color(0xFF00C6D7).withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(20),
                       border: Border.all(
-                        color: Colors.cyanAccent.withOpacity(0.3),
+                        color: const Color(0xFF00C6D7).withOpacity(0.25),
                       ),
                     ),
                     child: Column(
@@ -127,8 +128,8 @@ class _WelcomeBackScreenState extends State<WelcomeBackScreen> {
                         Row(
                           children: [
                             const Icon(
-                              Icons.history,
-                              color: Colors.cyanAccent,
+                              Icons.history_rounded,
+                              color: Color(0xFF00C6D7),
                             ),
                             const SizedBox(width: 12),
                             Expanded(
@@ -186,25 +187,25 @@ class _WelcomeBackScreenState extends State<WelcomeBackScreen> {
                         ),
                         suffixText: 'm³',
                         suffixStyle: const TextStyle(
-                          color: Colors.cyanAccent,
+                          color: AppColors.primary,
                           fontSize: 20,
                         ),
                         filled: true,
-                        fillColor: Colors.white.withOpacity(0.1),
+                        fillColor: Colors.white.withOpacity(0.08),
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(16),
                           borderSide: BorderSide.none,
                         ),
                         enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(16),
                           borderSide: BorderSide(
-                            color: Colors.cyanAccent.withOpacity(0.3),
+                            color: const Color(0xFF00C6D7).withOpacity(0.25),
                           ),
                         ),
                         focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(16),
                           borderSide: const BorderSide(
-                            color: Colors.cyanAccent,
+                            color: Color(0xFF00C6D7),
                             width: 2,
                           ),
                         ),
@@ -215,8 +216,11 @@ class _WelcomeBackScreenState extends State<WelcomeBackScreen> {
                   const SizedBox(height: 24),
                   Container(
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.05),
-                      borderRadius: BorderRadius.circular(12),
+                      color: Colors.white.withOpacity(0.06),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: Colors.white.withOpacity(0.12),
+                      ),
                     ),
                     child: CheckboxListTile(
                       value: _markAsAway,
@@ -237,7 +241,7 @@ class _WelcomeBackScreenState extends State<WelcomeBackScreen> {
                           fontSize: 12,
                         ),
                       ),
-                      activeColor: Colors.cyanAccent,
+                      activeColor: const Color(0xFF00C6D7),
                       checkColor: Colors.black,
                     ),
                   ),
@@ -245,14 +249,17 @@ class _WelcomeBackScreenState extends State<WelcomeBackScreen> {
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Colors.blue.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(8),
+                      color: const Color(0xFF00C6D7).withOpacity(0.08),
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(
+                        color: const Color(0xFF00C6D7).withOpacity(0.2),
+                      ),
                     ),
                     child: Row(
                       children: [
                         const Icon(
-                          Icons.info_outline,
-                          color: Colors.cyanAccent,
+                          Icons.info_outline_rounded,
+                          color: Color(0xFF00C6D7),
                           size: 20,
                         ),
                         const SizedBox(width: 12),
@@ -275,10 +282,10 @@ class _WelcomeBackScreenState extends State<WelcomeBackScreen> {
                     child: ElevatedButton(
                       onPressed: _isLoading ? null : _submit,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.cyanAccent,
+                        backgroundColor: const Color(0xFF00C6D7),
                         foregroundColor: Colors.black,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(16),
                         ),
                       ),
                       child: _isLoading

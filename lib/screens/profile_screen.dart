@@ -91,8 +91,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
-          gradient: AppColors.primaryGradient,
+        decoration: const BoxDecoration(
+          gradient: AppColors.backgroundGradient,
         ),
         child: SafeArea(
           child: Column(
@@ -200,8 +200,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Container(
       padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.textWhite.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(16),
+        color: AppColors.glassLight,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(
+          color: AppColors.glassBorder,
+          width: 1.5,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primary.withOpacity(0.08),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
+        ],
       ),
       child: Column(
         children: [

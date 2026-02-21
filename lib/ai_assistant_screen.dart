@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'theme/app_colors.dart';
 import 'package:glassmorphism/glassmorphism.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -111,7 +112,7 @@ class _AIAssistantScreenState extends State<AIAssistantScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF001529),
+        backgroundColor: AppColors.backgroundDark,
         title: Text("Rename Chat", style: GoogleFonts.poppins(color: Colors.white, fontSize: 18)),
         content: TextField(
           controller: renameController,
@@ -119,13 +120,13 @@ class _AIAssistantScreenState extends State<AIAssistantScreen> {
           decoration: const InputDecoration(
             hintText: "New title...",
             hintStyle: TextStyle(color: Colors.white38),
-            enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.cyanAccent)),
+            enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: AppColors.primary)),
           ),
         ),
         actions: [
           TextButton(onPressed: () => Navigator.pop(context), child: const Text("Cancel")),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.cyanAccent),
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary),
             onPressed: () {
               if (renameController.text.trim().isNotEmpty) {
                 setState(() {
@@ -146,7 +147,7 @@ class _AIAssistantScreenState extends State<AIAssistantScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF001529),
+        backgroundColor: AppColors.backgroundDark,
         title: Text("Delete Chat?", style: GoogleFonts.poppins(color: Colors.white)),
         content: const Text("This conversation will be gone forever.",
             style: TextStyle(color: Colors.white70)),
@@ -264,14 +265,14 @@ class _AIAssistantScreenState extends State<AIAssistantScreen> {
         elevation: 0,
         leading: Builder(
           builder: (context) => IconButton(
-            icon: const Icon(Icons.history_rounded, color: Colors.cyanAccent),
+            icon: const Icon(Icons.history_rounded, color: AppColors.primary),
             onPressed: () => Scaffold.of(context).openDrawer(),
           ),
         ),
       ),
       body: Container(
         decoration: const BoxDecoration(
-          gradient: LinearGradient(colors: [Color(0xFF0D47A1), Color(0xFF001529)], begin: Alignment.topCenter),
+          gradient: LinearGradient(colors: [AppColors.navyMid, AppColors.backgroundDark], begin: Alignment.topCenter),
         ),
         child: Column(
           children: [
@@ -303,7 +304,7 @@ class _AIAssistantScreenState extends State<AIAssistantScreen> {
     }).toList();
 
     return Drawer(
-      backgroundColor: const Color(0xFF001529),
+      backgroundColor: AppColors.backgroundDark,
       child: SafeArea(
         child: Column(
           children: [
@@ -314,7 +315,7 @@ class _AIAssistantScreenState extends State<AIAssistantScreen> {
                 icon: const Icon(Icons.add, color: Colors.black),
                 label: Text(l10n.translate('ai_new_chat'), style: const TextStyle(color: Colors.black)),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.cyanAccent,
+                  backgroundColor: AppColors.primary,
                   minimumSize: const Size(double.infinity, 50),
                 ),
               ),
@@ -370,7 +371,7 @@ class _AIAssistantScreenState extends State<AIAssistantScreen> {
                   final key = filteredKeys[index];
                   final chat = _historyBox.get(key);
                   return ListTile(
-                    leading: const Icon(Icons.chat_bubble_outline, color: Colors.cyanAccent, size: 18),
+                    leading: const Icon(Icons.chat_bubble_outline, color: AppColors.primary, size: 18),
                     title: Text(chat['title'] ?? "Untitled", style: const TextStyle(color: Colors.white70), maxLines: 1),
                     subtitle: Text(_getDisplayDate(chat['timestamp']), style: const TextStyle(color: Colors.white38, fontSize: 10)),
                     trailing: Row(
@@ -399,8 +400,9 @@ class _AIAssistantScreenState extends State<AIAssistantScreen> {
         margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: isAI ? Colors.white10 : Colors.cyanAccent.withOpacity(0.15),
+          color: isAI ? Colors.white.withOpacity(0.08) : AppColors.primary.withOpacity(0.20),
           borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: Colors.white.withOpacity(0.12), width: 1),
         ),
         child: MarkdownBody(data: msg["content"]!, styleSheet: MarkdownStyleSheet(p: GoogleFonts.poppins(color: Colors.white))),
       ),
@@ -419,7 +421,7 @@ class _AIAssistantScreenState extends State<AIAssistantScreen> {
       width: double.infinity,
       height: 90,
       decoration: BoxDecoration(
-        color: Color(0xFF001529).withOpacity(0.95),
+        color: AppColors.backgroundDark.withOpacity(0.95),
         border: Border(top: BorderSide(color: Colors.white.withOpacity(0.1), width: 1)),
       ),
       child: Padding(
@@ -445,7 +447,7 @@ class _AIAssistantScreenState extends State<AIAssistantScreen> {
             ),
             SizedBox(width: 8),
             IconButton(
-              icon: const Icon(Icons.send_rounded, color: Colors.cyanAccent),
+              icon: const Icon(Icons.send_rounded, color: AppColors.primary),
               onPressed: _sendMessage,
             ),
           ],

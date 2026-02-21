@@ -7,6 +7,7 @@ import '../../providers/water_provider.dart';
 import '../../providers/language_provider.dart';
 import '../../models/challenge_model.dart';
 import '../../models/household_member_model.dart';
+import '../../theme/app_colors.dart';
 import '../../main.dart' show MainNavigationShell;
 import 'onboarding_language_screen.dart';
 import 'onboarding_name_screen.dart';
@@ -138,7 +139,7 @@ class _OnboardingFlowScreenState extends State<OnboardingFlowScreen> {
           canPop: false,
           child: Center(
             child: CircularProgressIndicator(
-              color: Colors.cyanAccent,
+              color: AppColors.primary,
             ),
           ),
         ),

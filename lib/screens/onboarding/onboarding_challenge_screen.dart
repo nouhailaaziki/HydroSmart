@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/challenge_model.dart';
+import '../../theme/app_colors.dart';
 
 class OnboardingChallengeScreen extends StatefulWidget {
   final Function(ChallengeType type) onChallengeSelected;
@@ -30,11 +32,7 @@ class _OnboardingChallengeScreenState extends State<OnboardingChallengeScreen> {
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Color(0xFF0D47A1), Color(0xFF001529)],
-          ),
+          gradient: AppColors.backgroundGradient,
         ),
         child: SafeArea(
           child: Padding(
@@ -47,26 +45,46 @@ class _OnboardingChallengeScreenState extends State<OnboardingChallengeScreen> {
                   icon: const Icon(Icons.arrow_back, color: Colors.white),
                 ),
                 const SizedBox(height: 24),
-                const Icon(
-                  Icons.emoji_events_outlined,
-                  size: 64,
-                  color: Colors.cyanAccent,
+                Container(
+                  width: 64,
+                  height: 64,
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [AppColors.primary, AppColors.primaryDark],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.primary.withOpacity(0.4),
+                        blurRadius: 16,
+                        offset: const Offset(0, 6),
+                      ),
+                    ],
+                  ),
+                  child: const Icon(
+                    Icons.emoji_events_outlined,
+                    size: 32,
+                    color: Colors.white,
+                  ),
                 ),
                 const SizedBox(height: 24),
                 Text(
                   l10n.translate('onboarding_challenge_title'),
-                  style: const TextStyle(
+                  style: GoogleFonts.poppins(
                     fontSize: 28,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w700,
                     color: Colors.white,
+                    letterSpacing: -0.3,
                   ),
                 ),
                 const SizedBox(height: 12),
                 Text(
                   l10n.translate('onboarding_challenge_subtitle'),
-                  style: TextStyle(
+                  style: GoogleFonts.poppins(
                     fontSize: 16,
-                    color: Colors.white.withOpacity(0.7),
+                    color: Colors.white60,
                   ),
                 ),
                 const SizedBox(height: 24),
@@ -93,34 +111,34 @@ class _OnboardingChallengeScreenState extends State<OnboardingChallengeScreen> {
                         Container(
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
-                            color: Colors.cyanAccent.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(12),
+                            color: AppColors.primary.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(16),
                             border: Border.all(
-                              color: Colors.cyanAccent.withOpacity(0.3),
+                              color: AppColors.primary.withOpacity(0.25),
                             ),
                           ),
                           child: Column(
                             children: [
                               const Icon(
                                 Icons.auto_awesome,
-                                color: Colors.cyanAccent,
+                                color: AppColors.primary,
                                 size: 32,
                               ),
                               const SizedBox(height: 12),
                               Text(
                                 l10n.translate('onboarding_challenge_progressive_title'),
-                                style: TextStyle(
+                                style: GoogleFonts.poppins(
                                   color: Colors.white.withOpacity(0.9),
                                   fontSize: 16,
-                                  fontWeight: FontWeight.bold,
+                                  fontWeight: FontWeight.w600,
                                 ),
                                 textAlign: TextAlign.center,
                               ),
                               const SizedBox(height: 8),
                               Text(
                                 l10n.translate('onboarding_challenge_progressive_desc'),
-                                style: TextStyle(
-                                  color: Colors.white.withOpacity(0.7),
+                                style: GoogleFonts.poppins(
+                                  color: Colors.white60,
                                   fontSize: 13,
                                 ),
                                 textAlign: TextAlign.center,
@@ -134,30 +152,53 @@ class _OnboardingChallengeScreenState extends State<OnboardingChallengeScreen> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                SizedBox(
-                  width: double.infinity,
-                  height: 56,
-                  child: ElevatedButton(
-                    onPressed: _selectedType != null ? _submit : null,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: _selectedType != null
-                          ? Colors.cyanAccent
-                          : Colors.grey,
-                      foregroundColor: Colors.black,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    child: Text(
-                      l10n.translate('onboarding_challenge_start_btn'),
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
+                _buildStartButton(l10n),
               ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStartButton(AppLocalizations l10n) {
+    final isEnabled = _selectedType != null;
+    return Material(
+      color: Colors.transparent,
+      borderRadius: BorderRadius.circular(16),
+      child: InkWell(
+        onTap: isEnabled ? _submit : null,
+        borderRadius: BorderRadius.circular(16),
+        child: Ink(
+          height: 56,
+          decoration: BoxDecoration(
+            gradient: isEnabled
+                ? const LinearGradient(
+                    colors: [AppColors.primary, AppColors.primaryDark],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  )
+                : null,
+            color: isEnabled ? null : Colors.grey.withOpacity(0.4),
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: isEnabled
+                ? [
+                    BoxShadow(
+                      color: AppColors.primary.withOpacity(0.35),
+                      blurRadius: 16,
+                      offset: const Offset(0, 6),
+                    ),
+                  ]
+                : null,
+          ),
+          child: Center(
+            child: Text(
+              l10n.translate('onboarding_challenge_start_btn'),
+              style: GoogleFonts.poppins(
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+                color: Colors.white,
+              ),
             ),
           ),
         ),
@@ -176,29 +217,40 @@ class _OnboardingChallengeScreenState extends State<OnboardingChallengeScreen> {
 
     return InkWell(
       onTap: () => setState(() => _selectedType = type),
-      child: Container(
+      borderRadius: BorderRadius.circular(20),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           color: isSelected
-              ? Colors.cyanAccent.withOpacity(0.2)
-              : Colors.white.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(16),
+              ? AppColors.primary.withOpacity(0.15)
+              : Colors.white.withOpacity(0.06),
+          borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: isSelected ? Colors.cyanAccent : Colors.white.withOpacity(0.2),
+            color: isSelected ? AppColors.primary : Colors.white.withOpacity(0.15),
             width: isSelected ? 2 : 1,
           ),
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: AppColors.primary.withOpacity(0.15),
+                    blurRadius: 12,
+                    offset: const Offset(0, 4),
+                  ),
+                ]
+              : null,
         ),
         child: Row(
           children: [
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.cyanAccent.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(12),
+                color: AppColors.primary.withOpacity(0.18),
+                borderRadius: BorderRadius.circular(14),
               ),
               child: Icon(
                 icon,
-                color: Colors.cyanAccent,
+                color: AppColors.primary,
                 size: 32,
               ),
             ),
@@ -209,18 +261,18 @@ class _OnboardingChallengeScreenState extends State<OnboardingChallengeScreen> {
                 children: [
                   Text(
                     title,
-                    style: const TextStyle(
+                    style: GoogleFonts.poppins(
                       fontSize: 18,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w700,
                       color: Colors.white,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     description,
-                    style: TextStyle(
+                    style: GoogleFonts.poppins(
                       fontSize: 14,
-                      color: Colors.white.withOpacity(0.7),
+                      color: Colors.white60,
                     ),
                   ),
                 ],
@@ -231,7 +283,7 @@ class _OnboardingChallengeScreenState extends State<OnboardingChallengeScreen> {
                 if (isSelected)
                   const Icon(
                     Icons.check_circle,
-                    color: Colors.cyanAccent,
+                    color: AppColors.primary,
                     size: 28,
                   )
                 else
@@ -247,15 +299,15 @@ class _OnboardingChallengeScreenState extends State<OnboardingChallengeScreen> {
                     vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.cyanAccent.withOpacity(0.2),
+                    color: AppColors.primary.withOpacity(0.18),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
                     duration,
-                    style: const TextStyle(
-                      color: Colors.cyanAccent,
+                    style: GoogleFonts.poppins(
+                      color: AppColors.primary,
                       fontSize: 12,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
                 ),

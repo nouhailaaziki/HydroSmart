@@ -18,6 +18,9 @@ class AppConstants {
   static const double borderRadius16 = 16.0;
   static const double borderRadius20 = 20.0;
   static const double borderRadius24 = 24.0;
+  static const double borderRadius28 = 28.0;
+  static const double borderRadius32 = 32.0;
+  static const double cardRadius = 24.0;
 
   // Button Heights
   static const double buttonHeight = 48.0;

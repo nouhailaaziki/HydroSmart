@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'providers/water_provider.dart';
 import 'providers/auth_provider.dart';
 import 'providers/language_provider.dart';
+import 'providers/theme_provider.dart';
 import 'screens/profile_screen.dart';
 import 'screens/household_settings_screen.dart';
 import 'screens/challenge_management_screen.dart';
@@ -25,6 +26,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     final waterProvider = Provider.of<WaterProvider>(context);
     final languageProvider = Provider.of<LanguageProvider>(context);
+    final themeProvider = Provider.of<ThemeProvider>(context);
     final loc = AppLocalizations.of(context);
 
     return SingleChildScrollView(
@@ -66,6 +68,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           // Preferences Section
           _buildSectionHeader(loc.translate('preferences')),
           const SizedBox(height: 12),
+          _buildToggleOption(loc.translate('dark_mode'), themeProvider.isDarkMode, (value) => themeProvider.setTheme(value)),
           _buildToggleOption(loc.translate('leak_detection'), waterProvider.leakDetectionEnabled, waterProvider.toggleLeakDetection),
 
           // Notifications Settings
@@ -110,7 +113,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget _buildSectionHeader(String title) {
     return Text(
       title,
-      style: AppTextStyles.heading3,
+      style: AppTextStyles.getHeading3(context),
     );
   }
 
@@ -119,12 +122,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return ExpansionTile(
       title: Text(
         loc.translate('notifications'),
-        style: AppTextStyles.body,
+        style: AppTextStyles.getBody(context),
       ),
       leading: Icon(Icons.notifications_outlined, color: AppColors.primary),
       trailing: Switch(
         value: provider.notificationsEnabled,
-        activeColor: Colors.cyanAccent,
+        activeColor: AppColors.primary,
         onChanged: provider.toggleNotifications,
       ),
       children: [
@@ -138,32 +141,37 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Widget _buildLanguageSelector(LanguageProvider languageProvider) {
     final loc = AppLocalizations.of(context);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return GlassmorphicContainer(
       width: double.infinity,
       height: 70,
-      borderRadius: 15,
-      blur: 20,
+      borderRadius: 24,
+      blur: 24,
       alignment: Alignment.center,
       border: 2,
       linearGradient: LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
         colors: [
-          Colors.white.withOpacity(0.1),
-          Colors.white.withOpacity(0.05),
+          Color(0x201A73E8),
+          Color(0x101A73E8),
         ],
       ),
       borderGradient: LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
         colors: [
-          Colors.white.withOpacity(0.2),
-          Colors.white.withOpacity(0.1),
+          Colors.white.withOpacity(0.25),
+          Colors.white.withOpacity(0.12),
         ],
       ),
       child: ListTile(
         leading: Icon(Icons.language, color: AppColors.primary),
-        title: Text(loc.translate('language'), style: AppTextStyles.body),
+        title: Text(loc.translate('language'), style: AppTextStyles.getBody(context)),
         trailing: DropdownButton<String>(
           value: languageProvider.currentLanguage,
-          dropdownColor: AppColors.backgroundDark,
-          style: AppTextStyles.body,
+          dropdownColor: isDark ? AppColors.backgroundDark : AppColors.lightCyanSurface,
+          style: AppTextStyles.getBody(context),
           underline: SizedBox(),
           items: [
             DropdownMenuItem(value: 'en', child: Text('English')),
@@ -182,10 +190,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Widget _buildToggleOption(String title, bool val, Function(bool) onChanged) {
     return ListTile(
-      title: Text(title, style: AppTextStyles.body),
+      title: Text(title, style: AppTextStyles.getBody(context)),
       trailing: Switch(
         value: val,
-        activeColor: Colors.cyanAccent,
+        activeColor: AppColors.primary,
         onChanged: onChanged,
       ),
     );
@@ -195,26 +203,30 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return GlassmorphicContainer(
       width: double.infinity,
       height: 60,
-      borderRadius: 15,
-      blur: 20,
+      borderRadius: 24,
+      blur: 24,
       alignment: Alignment.center,
       border: 2,
       linearGradient: LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
         colors: [
-          Colors.white.withOpacity(0.1),
-          Colors.white.withOpacity(0.05),
+          Color(0x201A73E8),
+          Color(0x101A73E8),
         ],
       ),
       borderGradient: LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
         colors: [
-          Colors.white.withOpacity(0.2),
-          Colors.white.withOpacity(0.1),
+          Colors.white.withOpacity(0.25),
+          Colors.white.withOpacity(0.12),
         ],
       ),
       child: ListTile(
         leading: Icon(Icons.person_outline, color: AppColors.primary),
-        title: Text(AppLocalizations.of(context).translate('edit_profile'), style: AppTextStyles.body),
-        trailing: Icon(Icons.arrow_forward_ios, color: Colors.white54, size: 16),
+        title: Text(AppLocalizations.of(context).translate('edit_profile'), style: AppTextStyles.getBody(context)),
+        trailing: Icon(Icons.arrow_forward_ios, color: Theme.of(context).brightness == Brightness.dark ? Colors.white54 : AppColors.lightPrimaryText.withOpacity(0.4), size: 16),
         onTap: () {
           Navigator.push(
             context,
@@ -226,11 +238,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Widget _buildLogoutButton(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return GlassmorphicContainer(
       width: double.infinity,
       height: 60,
-      borderRadius: 15,
-      blur: 20,
+      borderRadius: 24,
+      blur: 24,
       alignment: Alignment.center,
       border: 2,
       linearGradient: LinearGradient(
@@ -247,20 +260,36 @@ class _SettingsScreenState extends State<SettingsScreen> {
       ),
       child: ListTile(
         leading: Icon(Icons.logout, color: Colors.redAccent),
-        title: Text(AppLocalizations.of(context).translate('logout'), style: GoogleFonts.poppins(color: Colors.white)),
-        trailing: Icon(Icons.arrow_forward_ios, color: Colors.white54, size: 16),
+        title: Text(
+          AppLocalizations.of(context).translate('logout'),
+          style: GoogleFonts.poppins(color: isDark ? Colors.white : AppColors.lightPrimaryText),
+        ),
+        trailing: Icon(
+          Icons.arrow_forward_ios,
+          color: isDark ? Colors.white54 : AppColors.lightPrimaryText.withOpacity(0.4),
+          size: 16,
+        ),
         onTap: () {
           final loc = AppLocalizations.of(context);
           showDialog(
             context: context,
             builder: (context) => AlertDialog(
-              backgroundColor: Color(0xFF0D47A1),
-              title: Text(loc.translate('logout'), style: GoogleFonts.poppins(color: Colors.white)),
-              content: Text(loc.translate('logout_confirm'), style: TextStyle(color: Colors.white70)),
+              backgroundColor: isDark ? AppColors.navyMid : AppColors.lightCyanSurface,
+              title: Text(
+                loc.translate('logout'),
+                style: GoogleFonts.poppins(color: isDark ? Colors.white : AppColors.lightPrimaryText),
+              ),
+              content: Text(
+                loc.translate('logout_confirm'),
+                style: TextStyle(color: isDark ? Colors.white70 : AppColors.lightPrimaryText.withOpacity(0.7)),
+              ),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: Text(loc.translate('cancel'), style: TextStyle(color: Colors.white70)),
+                  child: Text(
+                    loc.translate('cancel'),
+                    style: TextStyle(color: isDark ? Colors.white70 : AppColors.lightPrimaryText.withOpacity(0.7)),
+                  ),
                 ),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
@@ -280,47 +309,61 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Widget _buildInfoTile(String title, String value) {
     return ListTile(
-      title: Text(title, style: AppTextStyles.body),
+      title: Text(title, style: AppTextStyles.getBody(context)),
       trailing: Text(
         value,
-        style: AppTextStyles.caption.copyWith(color: AppColors.primary),
+        style: AppTextStyles.getCaption(context).copyWith(color: AppColors.primary),
       ),
     );
   }
 
   Widget _buildActionTile(String title, IconData icon, VoidCallback onTap) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return ListTile(
       leading: Icon(icon, color: AppColors.primary),
-      title: Text(title, style: AppTextStyles.body),
-      trailing: Icon(Icons.arrow_forward_ios, color: Colors.white54, size: 16),
+      title: Text(title, style: AppTextStyles.getBody(context)),
+      trailing: Icon(
+        Icons.arrow_forward_ios,
+        color: isDark ? Colors.white54 : AppColors.lightPrimaryText.withOpacity(0.4),
+        size: 16,
+      ),
       onTap: onTap,
     );
   }
 
   Widget _buildNavigationTile(String title, IconData icon, VoidCallback onTap) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return GlassmorphicContainer(
       width: double.infinity,
       height: 70,
-      borderRadius: 15,
-      blur: 20,
+      borderRadius: 24,
+      blur: 24,
       alignment: Alignment.center,
       border: 2,
       linearGradient: LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
         colors: [
-          Colors.white.withOpacity(0.1),
-          Colors.white.withOpacity(0.05),
+          Color(0x201A73E8),
+          Color(0x101A73E8),
         ],
       ),
       borderGradient: LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
         colors: [
-          Colors.white.withOpacity(0.2),
-          Colors.white.withOpacity(0.1),
+          Colors.white.withOpacity(0.25),
+          Colors.white.withOpacity(0.12),
         ],
       ),
       child: ListTile(
         leading: Icon(icon, color: AppColors.primary),
-        title: Text(title, style: AppTextStyles.body),
-        trailing: Icon(Icons.arrow_forward_ios, color: Colors.white54, size: 16),
+        title: Text(title, style: AppTextStyles.getBody(context)),
+        trailing: Icon(
+          Icons.arrow_forward_ios,
+          color: isDark ? Colors.white54 : AppColors.lightPrimaryText.withOpacity(0.4),
+          size: 16,
+        ),
         onTap: onTap,
       ),
     );

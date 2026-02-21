@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../l10n/app_localizations.dart';
+import '../../theme/app_colors.dart';
 import '../../utils/validators.dart';
 
 class OnboardingMeterScreen extends StatefulWidget {
@@ -33,9 +35,9 @@ class _OnboardingMeterScreenState extends State<OnboardingMeterScreen> {
         return Theme(
           data: ThemeData.dark().copyWith(
             colorScheme: const ColorScheme.dark(
-              primary: Colors.cyanAccent,
-              onPrimary: Colors.black,
-              surface: Color(0xFF001529),
+              primary: AppColors.primary,
+              onPrimary: Colors.white,
+              surface: AppColors.navyMid,
               onSurface: Colors.white,
             ),
           ),
@@ -64,11 +66,7 @@ class _OnboardingMeterScreenState extends State<OnboardingMeterScreen> {
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Color(0xFF0D47A1), Color(0xFF001529)],
-          ),
+          gradient: AppColors.backgroundGradient,
         ),
         child: SafeArea(
           child: Padding(
@@ -81,26 +79,46 @@ class _OnboardingMeterScreenState extends State<OnboardingMeterScreen> {
                   icon: const Icon(Icons.arrow_back, color: Colors.white),
                 ),
                 const SizedBox(height: 24),
-                const Icon(
-                  Icons.water_drop_outlined,
-                  size: 64,
-                  color: Colors.cyanAccent,
+                Container(
+                  width: 64,
+                  height: 64,
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [AppColors.primary, AppColors.primaryDark],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.primary.withOpacity(0.4),
+                        blurRadius: 16,
+                        offset: const Offset(0, 6),
+                      ),
+                    ],
+                  ),
+                  child: const Icon(
+                    Icons.water_drop_outlined,
+                    size: 32,
+                    color: Colors.white,
+                  ),
                 ),
                 const SizedBox(height: 24),
                 Text(
                   l10n.translate('onboarding_meter_title'),
-                  style: const TextStyle(
+                  style: GoogleFonts.poppins(
                     fontSize: 28,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w700,
                     color: Colors.white,
+                    letterSpacing: -0.3,
                   ),
                 ),
                 const SizedBox(height: 12),
                 Text(
                   l10n.translate('onboarding_meter_subtitle'),
-                  style: TextStyle(
+                  style: GoogleFonts.poppins(
                     fontSize: 16,
-                    color: Colors.white.withOpacity(0.7),
+                    color: Colors.white60,
                   ),
                 ),
                 const SizedBox(height: 32),
@@ -114,7 +132,7 @@ class _OnboardingMeterScreenState extends State<OnboardingMeterScreen> {
                           // Meter Reading Input
                           Text(
                             l10n.translate('onboarding_meter_reading_label'),
-                            style: TextStyle(
+                            style: GoogleFonts.poppins(
                               fontSize: 16,
                               color: Colors.white.withOpacity(0.9),
                               fontWeight: FontWeight.w500,
@@ -124,38 +142,38 @@ class _OnboardingMeterScreenState extends State<OnboardingMeterScreen> {
                           TextFormField(
                             controller: _meterController,
                             keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                            style: const TextStyle(
+                            style: GoogleFonts.poppins(
                               color: Colors.white,
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
                             ),
                             decoration: InputDecoration(
                               hintText: '0.000',
-                              hintStyle: TextStyle(
-                                color: Colors.white.withOpacity(0.3),
+                              hintStyle: GoogleFonts.poppins(
+                                color: Colors.white38,
                               ),
                               filled: true,
-                              fillColor: Colors.white.withOpacity(0.1),
+                              fillColor: Colors.white.withOpacity(0.08),
                               border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
+                                borderRadius: BorderRadius.circular(16),
                                 borderSide: BorderSide.none,
                               ),
                               enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
+                                borderRadius: BorderRadius.circular(16),
                                 borderSide: BorderSide(
-                                  color: Colors.cyanAccent.withOpacity(0.3),
+                                  color: AppColors.primary.withOpacity(0.3),
                                 ),
                               ),
                               focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
+                                borderRadius: BorderRadius.circular(16),
                                 borderSide: const BorderSide(
-                                  color: Colors.cyanAccent,
+                                  color: AppColors.primary,
                                   width: 2,
                                 ),
                               ),
                               prefixIcon: const Icon(
                                 Icons.speed,
-                                color: Colors.cyanAccent,
+                                color: AppColors.primary,
                               ),
                             ),
                             validator: Validators.validateMeterReading,
@@ -164,21 +182,24 @@ class _OnboardingMeterScreenState extends State<OnboardingMeterScreen> {
                           Container(
                             padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
-                              color: Colors.cyanAccent.withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(8),
+                              color: AppColors.primary.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: AppColors.primary.withOpacity(0.2),
+                              ),
                             ),
                             child: Row(
                               children: [
                                 const Icon(
                                   Icons.info_outline,
-                                  color: Colors.cyanAccent,
+                                  color: AppColors.primary,
                                   size: 20,
                                 ),
                                 const SizedBox(width: 12),
                                 Expanded(
                                   child: Text(
                                     l10n.translate('onboarding_meter_hint_text'),
-                                    style: TextStyle(
+                                    style: GoogleFonts.poppins(
                                       color: Colors.white.withOpacity(0.9),
                                       fontSize: 12,
                                     ),
@@ -192,7 +213,7 @@ class _OnboardingMeterScreenState extends State<OnboardingMeterScreen> {
                           // Notification Time Picker
                           Text(
                             l10n.translate('onboarding_reminder_time_label'),
-                            style: TextStyle(
+                            style: GoogleFonts.poppins(
                               fontSize: 16,
                               color: Colors.white.withOpacity(0.9),
                               fontWeight: FontWeight.w500,
@@ -201,25 +222,26 @@ class _OnboardingMeterScreenState extends State<OnboardingMeterScreen> {
                           const SizedBox(height: 12),
                           InkWell(
                             onTap: _selectTime,
+                            borderRadius: BorderRadius.circular(16),
                             child: Container(
                               padding: const EdgeInsets.all(16),
                               decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(12),
+                                color: Colors.white.withOpacity(0.08),
+                                borderRadius: BorderRadius.circular(16),
                                 border: Border.all(
-                                  color: Colors.cyanAccent.withOpacity(0.3),
+                                  color: AppColors.primary.withOpacity(0.3),
                                 ),
                               ),
                               child: Row(
                                 children: [
                                   const Icon(
                                     Icons.access_time,
-                                    color: Colors.cyanAccent,
+                                    color: AppColors.primary,
                                   ),
                                   const SizedBox(width: 16),
                                   Text(
                                     _selectedTime.format(context),
-                                    style: const TextStyle(
+                                    style: GoogleFonts.poppins(
                                       color: Colors.white,
                                       fontSize: 20,
                                       fontWeight: FontWeight.bold,
@@ -238,21 +260,24 @@ class _OnboardingMeterScreenState extends State<OnboardingMeterScreen> {
                           Container(
                             padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
-                              color: Colors.cyanAccent.withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(8),
+                              color: AppColors.primary.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: AppColors.primary.withOpacity(0.2),
+                              ),
                             ),
                             child: Row(
                               children: [
                                 const Icon(
                                   Icons.notifications_active_outlined,
-                                  color: Colors.cyanAccent,
+                                  color: AppColors.primary,
                                   size: 20,
                                 ),
                                 const SizedBox(width: 12),
                                 Expanded(
                                   child: Text(
                                     l10n.translate('onboarding_reminder_hint_text'),
-                                    style: TextStyle(
+                                    style: GoogleFonts.poppins(
                                       color: Colors.white.withOpacity(0.9),
                                       fontSize: 12,
                                     ),
@@ -266,28 +291,47 @@ class _OnboardingMeterScreenState extends State<OnboardingMeterScreen> {
                     ),
                   ),
                 ),
-                SizedBox(
-                  width: double.infinity,
-                  height: 56,
-                  child: ElevatedButton(
-                    onPressed: _submit,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.cyanAccent,
-                      foregroundColor: Colors.black,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    child: Text(
-                      l10n.translate('continue'),
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
+                _buildContinueButton(l10n),
               ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildContinueButton(AppLocalizations l10n) {
+    return Material(
+      color: Colors.transparent,
+      borderRadius: BorderRadius.circular(16),
+      child: InkWell(
+        onTap: _submit,
+        borderRadius: BorderRadius.circular(16),
+        child: Ink(
+          height: 56,
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              colors: [AppColors.primary, AppColors.primaryDark],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.primary.withOpacity(0.35),
+                blurRadius: 16,
+                offset: const Offset(0, 6),
+              ),
+            ],
+          ),
+          child: Center(
+            child: Text(
+              l10n.translate('continue'),
+              style: GoogleFonts.poppins(
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+                color: Colors.white,
+              ),
             ),
           ),
         ),

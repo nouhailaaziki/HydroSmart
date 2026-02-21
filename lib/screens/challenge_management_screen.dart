@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../theme/app_colors.dart';
 import 'package:provider/provider.dart';
 import '../providers/water_provider.dart';
 import '../models/challenge_model.dart';
@@ -12,7 +13,7 @@ class ChallengeManagementScreen extends StatelessWidget {
     final challenge = waterProvider.currentChallenge;
 
     return Scaffold(
-      backgroundColor: const Color(0xFF001529),
+      backgroundColor: AppColors.backgroundDark,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -23,7 +24,7 @@ class ChallengeManagementScreen extends StatelessWidget {
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [Color(0xFF0D47A1), Color(0xFF001529)],
+            colors: [AppColors.navyMid, AppColors.backgroundDark],
           ),
         ),
         child: challenge == null
@@ -43,7 +44,7 @@ class ChallengeManagementScreen extends StatelessWidget {
             const Icon(
               Icons.emoji_events_outlined,
               size: 80,
-              color: Colors.cyanAccent,
+              color: AppColors.primary,
             ),
             const SizedBox(height: 24),
             const Text(
@@ -71,7 +72,7 @@ class ChallengeManagementScreen extends StatelessWidget {
               icon: const Icon(Icons.add),
               label: const Text('Start Challenge'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.cyanAccent,
+                backgroundColor: AppColors.primary,
                 foregroundColor: Colors.black,
                 padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
               ),
@@ -101,10 +102,10 @@ class ChallengeManagementScreen extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: Colors.cyanAccent.withOpacity(0.1),
+              color: AppColors.primary.withOpacity(0.1),
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
-                color: Colors.cyanAccent.withOpacity(0.3),
+                color: AppColors.primary.withOpacity(0.3),
               ),
             ),
             child: Column(
@@ -116,7 +117,7 @@ class ChallengeManagementScreen extends StatelessWidget {
                       challenge.type == ChallengeType.weekly
                           ? Icons.calendar_view_week
                           : Icons.calendar_month,
-                      color: Colors.cyanAccent,
+                      color: AppColors.primary,
                       size: 32,
                     ),
                     const SizedBox(width: 12),
@@ -174,7 +175,7 @@ class ChallengeManagementScreen extends StatelessWidget {
                     minHeight: 12,
                     backgroundColor: Colors.white.withOpacity(0.2),
                     valueColor: AlwaysStoppedAnimation<Color>(
-                      progress > 1.0 ? Colors.red : Colors.cyanAccent,
+                      progress > 1.0 ? Colors.red : AppColors.primary,
                     ),
                   ),
                 ),
@@ -215,7 +216,7 @@ class ChallengeManagementScreen extends StatelessWidget {
                         Text(
                           '${challenge.targetConsumption.toStringAsFixed(2)} m³',
                           style: const TextStyle(
-                            color: Colors.cyanAccent,
+                            color: AppColors.primary,
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                           ),
@@ -316,7 +317,7 @@ class ChallengeManagementScreen extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Icon(icon, color: Colors.cyanAccent),
+          Icon(icon, color: AppColors.primary),
           const SizedBox(width: 12),
           Expanded(
             child: Text(
@@ -357,7 +358,7 @@ class ChallengeManagementScreen extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Icon(Icons.water_drop, color: Colors.cyanAccent),
+              const Icon(Icons.water_drop, color: AppColors.primary),
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
@@ -398,7 +399,7 @@ class ChallengeManagementScreen extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF001529),
+        backgroundColor: AppColors.backgroundDark,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),
@@ -410,7 +411,7 @@ class ChallengeManagementScreen extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
-              leading: const Icon(Icons.calendar_view_week, color: Colors.cyanAccent),
+              leading: const Icon(Icons.calendar_view_week, color: AppColors.primary),
               title: const Text('Weekly', style: TextStyle(color: Colors.white)),
               onTap: () async {
                 Navigator.pop(context);
@@ -426,7 +427,7 @@ class ChallengeManagementScreen extends StatelessWidget {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.calendar_month, color: Colors.cyanAccent),
+              leading: const Icon(Icons.calendar_month, color: AppColors.primary),
               title: const Text('Monthly', style: TextStyle(color: Colors.white)),
               onTap: () async {
                 Navigator.pop(context);

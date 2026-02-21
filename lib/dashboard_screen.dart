@@ -9,6 +9,7 @@ import 'models/challenge_model.dart';
 import 'models/usage_record_model.dart';
 import 'screens/achievements_screen.dart';
 import 'l10n/app_localizations.dart';
+import 'theme/app_colors.dart';
 
 class HydrosmartDashboard extends StatelessWidget {
   static const double _yAxisInterval = 20.0;
@@ -83,7 +84,10 @@ class HydrosmartDashboard extends StatelessWidget {
             ),
           ],
         ),
-        CircleAvatar(backgroundColor: Colors.white24, child: Icon(Icons.person, color: Colors.white)),
+        CircleAvatar(
+          backgroundColor: Colors.white.withOpacity(0.15),
+          child: const Icon(Icons.person_outline_rounded, color: Colors.white),
+        ),
       ],
     );
   }
@@ -122,29 +126,52 @@ class HydrosmartDashboard extends StatelessWidget {
 
     return GlassmorphicContainer(
       width: MediaQuery.of(context).size.width - 40,
-      height: 200,
-      borderRadius: 20,
+      height: 230,
+      borderRadius: 24,
       blur: 20,
       alignment: Alignment.center,
-      border: 2,
-      linearGradient: LinearGradient(colors: [Colors.white.withOpacity(0.1), Colors.white.withOpacity(0.05)]),
-      borderGradient: LinearGradient(colors: [Colors.white24, Colors.white10]),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(periodLabel, style: GoogleFonts.poppins(color: Colors.white)),
-          SizedBox(height: 10),
-          Text(
-              "${currentPeriodConsumption.toStringAsFixed(1)}L / ${goal.toStringAsFixed(0)}L",
-              style: GoogleFonts.poppins(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold)
-          ),
-          Text(
-              isOverLimit ? loc.translate('status_over_limit') : loc.translate('status_on_track'),
-              style: GoogleFonts.poppins(
-                  color: isOverLimit ? Colors.redAccent : Colors.greenAccent
-              )
-          ),
-        ],
+      border: 1.5,
+      linearGradient: const LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [Color(0x201A73E8), Color(0x101A73E8)],
+      ),
+      borderGradient: const LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [Color(0x40FFFFFF), Color(0x1AFFFFFF)],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(periodLabel, style: GoogleFonts.poppins(color: Colors.white70)),
+            SizedBox(height: 10),
+            Text(
+                "${currentPeriodConsumption.toStringAsFixed(1)}L / ${goal.toStringAsFixed(0)}L",
+                style: GoogleFonts.poppins(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold)
+            ),
+            Text(
+                isOverLimit ? loc.translate('status_over_limit') : loc.translate('status_on_track'),
+                style: GoogleFonts.poppins(
+                    color: isOverLimit ? Colors.redAccent : Colors.greenAccent
+                )
+            ),
+            SizedBox(height: 16),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: LinearProgressIndicator(
+                value: (goal > 0 ? (currentPeriodConsumption / goal).clamp(0.0, 1.0) : 0.0),
+                minHeight: 6,
+                backgroundColor: Colors.white.withOpacity(0.15),
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  isOverLimit ? Colors.redAccent : AppColors.primary,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -168,8 +195,16 @@ class HydrosmartDashboard extends StatelessWidget {
           height: 220,
           padding: EdgeInsets.all(16),
           decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.05),
-              borderRadius: BorderRadius.circular(20)
+              color: Colors.white.withOpacity(0.06),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: Colors.white.withOpacity(0.12), width: 1.5),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.primary.withOpacity(0.08),
+                  blurRadius: 16,
+                  offset: const Offset(0, 4),
+                ),
+              ],
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -186,16 +221,17 @@ class HydrosmartDashboard extends StatelessWidget {
                     ),
                   ),
                   Container(
-                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                     decoration: BoxDecoration(
-                      color: Colors.cyanAccent.withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(8),
+                      color: AppColors.primary.withOpacity(0.18),
+                      borderRadius: BorderRadius.circular(10),
                     ),
                     child: Text(
                       loc.translate('liters'),
                       style: GoogleFonts.poppins(
-                        color: Colors.cyanAccent,
+                        color: AppColors.secondary,
                         fontSize: 12,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                   ),
@@ -276,8 +312,8 @@ class HydrosmartDashboard extends StatelessWidget {
                           return FlSpot(entry.key.toDouble(), entry.value.usage);
                         }).toList(),
                         isCurved: true,
-                        gradient: LinearGradient(
-                          colors: [Colors.cyanAccent, Colors.blueAccent],
+                        gradient: const LinearGradient(
+                          colors: [AppColors.primary, AppColors.primaryDark],
                         ),
                         barWidth: 3,
                         isStrokeCapRound: true,
@@ -286,7 +322,7 @@ class HydrosmartDashboard extends StatelessWidget {
                           getDotPainter: (spot, percent, barData, index) {
                             return FlDotCirclePainter(
                               radius: 4,
-                              color: Colors.cyanAccent,
+                              color: AppColors.primary,
                               strokeWidth: 2,
                               strokeColor: Colors.white,
                             );
@@ -296,8 +332,8 @@ class HydrosmartDashboard extends StatelessWidget {
                           show: true,
                           gradient: LinearGradient(
                             colors: [
-                              Colors.cyanAccent.withOpacity(0.3),
-                              Colors.cyanAccent.withOpacity(0.0),
+                              AppColors.primary.withOpacity(0.25),
+                              AppColors.primary.withOpacity(0.0),
                             ],
                             begin: Alignment.topCenter,
                             end: Alignment.bottomCenter,
@@ -361,21 +397,23 @@ class HydrosmartDashboard extends StatelessWidget {
         padding: EdgeInsets.all(16),
         decoration: BoxDecoration(
           gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
             colors: [
-              Colors.amber.withOpacity(0.2),
-              Colors.orange.withOpacity(0.1),
+              Colors.amber.withOpacity(0.18),
+              Colors.orange.withOpacity(0.08),
             ],
           ),
-          borderRadius: BorderRadius.circular(15),
-          border: Border.all(color: Colors.amber.withOpacity(0.3)),
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: Colors.amber.withOpacity(0.25), width: 1.5),
         ),
         child: Row(
           children: [
             Container(
               padding: EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.amber.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(12),
+                color: Colors.amber.withOpacity(0.18),
+                borderRadius: BorderRadius.circular(16),
               ),
               child: Icon(Icons.emoji_events, color: Colors.amber, size: 28),
             ),
@@ -412,11 +450,22 @@ class HydrosmartDashboard extends StatelessWidget {
 
   Widget _statTile(String val, String label, IconData icon, Color color) {
     return Container(
-      padding: EdgeInsets.all(15),
-      decoration: BoxDecoration(color: Colors.white.withOpacity(0.1), borderRadius: BorderRadius.circular(15)),
+      padding: EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.06),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: Colors.white.withOpacity(0.12), width: 1.5),
+        boxShadow: [
+          BoxShadow(
+            color: color.withOpacity(0.08),
+            blurRadius: 16,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
       child: Column(children: [
         Icon(icon, color: color),
-        Text(val, style: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.bold)),
+        Text(val, style: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.w700)),
         Text(label, style: GoogleFonts.poppins(color: Colors.white54, fontSize: 12)),
       ]),
     );

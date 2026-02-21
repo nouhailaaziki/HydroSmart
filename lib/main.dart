@@ -16,6 +16,7 @@ import 'screens/daily_meter_input_screen.dart';
 import 'screens/welcome_back_screen.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'theme/app_theme.dart';
+import 'theme/app_colors.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -74,12 +75,14 @@ class HydrosmartApp extends StatelessWidget {
       home = const MainNavigationShell();
     }
 
+    final themeProvider = context.watch<ThemeProvider>();
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Hydrosmart',
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
-      themeMode: ThemeMode.dark,
+      themeMode: themeProvider.themeMode,
       locale: languageProvider.currentLocale,
       localizationsDelegates: const [
         AppLocalizationsDelegate(),
@@ -157,14 +160,13 @@ class _MainNavigationShellState extends State<MainNavigationShell> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
       body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Color(0xFF0D47A1), Color(0xFF001529)],
-          ),
+        decoration: BoxDecoration(
+          gradient: isDark
+              ? AppColors.backgroundGradient
+              : AppColors.lightBackgroundGradient,
         ),
         child: IndexedStack(
             index: _selectedIndex,
@@ -174,8 +176,8 @@ class _MainNavigationShellState extends State<MainNavigationShell> {
       floatingActionButton: _selectedIndex == 0
           ? FloatingActionButton.extended(
         onPressed: _showMeterInput,
-        backgroundColor: Colors.cyanAccent,
-        foregroundColor: Colors.black,
+        backgroundColor: AppColors.primary,
+        foregroundColor: Colors.white,
         icon: const Icon(Icons.water_drop),
         label: Text(
           AppLocalizations.of(context).translate('log_reading'),
@@ -187,23 +189,21 @@ class _MainNavigationShellState extends State<MainNavigationShell> {
         height: 70,
         selectedIndex: _selectedIndex,
         onDestinationSelected: (index) => setState(() => _selectedIndex = index),
-        backgroundColor: const Color(0xFF001529),
-        indicatorColor: Colors.cyanAccent.withOpacity(0.2),
         labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
         destinations: [
           NavigationDestination(
             icon: const Icon(Icons.dashboard_outlined),
-            selectedIcon: const Icon(Icons.dashboard, color: Colors.cyanAccent),
+            selectedIcon: const Icon(Icons.dashboard, color: AppColors.primary),
             label: AppLocalizations.of(context).translate('nav_home'),
           ),
           NavigationDestination(
             icon: const Icon(Icons.chat_bubble_outline),
-            selectedIcon: const Icon(Icons.chat_bubble, color: Colors.cyanAccent),
+            selectedIcon: const Icon(Icons.chat_bubble, color: AppColors.primary),
             label: AppLocalizations.of(context).translate('nav_ai_chat'),
           ),
           NavigationDestination(
             icon: const Icon(Icons.settings_outlined),
-            selectedIcon: const Icon(Icons.settings, color: Colors.cyanAccent),
+            selectedIcon: const Icon(Icons.settings, color: AppColors.primary),
             label: AppLocalizations.of(context).translate('nav_settings'),
           ),
         ],

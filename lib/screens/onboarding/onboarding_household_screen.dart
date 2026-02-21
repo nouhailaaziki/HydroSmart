@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:uuid/uuid.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/household_member_model.dart';
+import '../../theme/app_colors.dart';
 import '../../utils/validators.dart';
 
 class OnboardingHouseholdScreen extends StatefulWidget {
@@ -85,11 +87,7 @@ class _OnboardingHouseholdScreenState extends State<OnboardingHouseholdScreen> {
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Color(0xFF0D47A1), Color(0xFF001529)],
-          ),
+          gradient: AppColors.backgroundGradient,
         ),
         child: SafeArea(
           child: Padding(
@@ -102,26 +100,46 @@ class _OnboardingHouseholdScreenState extends State<OnboardingHouseholdScreen> {
                   icon: const Icon(Icons.arrow_back, color: Colors.white),
                 ),
                 const SizedBox(height: 24),
-                const Icon(
-                  Icons.family_restroom,
-                  size: 64,
-                  color: Colors.cyanAccent,
+                Container(
+                  width: 64,
+                  height: 64,
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [AppColors.primary, AppColors.primaryDark],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.primary.withOpacity(0.4),
+                        blurRadius: 16,
+                        offset: const Offset(0, 6),
+                      ),
+                    ],
+                  ),
+                  child: const Icon(
+                    Icons.family_restroom,
+                    size: 32,
+                    color: Colors.white,
+                  ),
                 ),
                 const SizedBox(height: 24),
                 Text(
                   l10n.translate('onboarding_household_title'),
-                  style: const TextStyle(
+                  style: GoogleFonts.poppins(
                     fontSize: 28,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w700,
                     color: Colors.white,
+                    letterSpacing: -0.3,
                   ),
                 ),
                 const SizedBox(height: 12),
                 Text(
                   l10n.translate('onboarding_household_subtitle'),
-                  style: TextStyle(
+                  style: GoogleFonts.poppins(
                     fontSize: 16,
-                    color: Colors.white.withOpacity(0.7),
+                    color: Colors.white60,
                   ),
                 ),
                 const SizedBox(height: 32),
@@ -134,7 +152,7 @@ class _OnboardingHouseholdScreenState extends State<OnboardingHouseholdScreen> {
                         children: [
                           Text(
                             l10n.translate('onboarding_household_size_question'),
-                            style: TextStyle(
+                            style: GoogleFonts.poppins(
                               fontSize: 16,
                               color: Colors.white.withOpacity(0.9),
                               fontWeight: FontWeight.w500,
@@ -146,19 +164,45 @@ class _OnboardingHouseholdScreenState extends State<OnboardingHouseholdScreen> {
                             runSpacing: 12,
                             children: List.generate(10, (index) {
                               final size = index + 1;
-                              return ChoiceChip(
-                                label: Text('$size'),
-                                selected: _householdSize == size,
-                                onSelected: (selected) {
-                                  if (selected) _updateHouseholdSize(size);
-                                },
-                                selectedColor: Colors.cyanAccent,
-                                backgroundColor: Colors.white.withOpacity(0.1),
-                                labelStyle: TextStyle(
-                                  color: _householdSize == size
-                                      ? Colors.black
-                                      : Colors.white,
-                                  fontWeight: FontWeight.bold,
+                              final isSelected = _householdSize == size;
+                              return GestureDetector(
+                                onTap: () => _updateHouseholdSize(size),
+                                child: AnimatedContainer(
+                                  duration: const Duration(milliseconds: 200),
+                                  width: 48,
+                                  height: 48,
+                                  decoration: BoxDecoration(
+                                    gradient: isSelected
+                                        ? const LinearGradient(
+                                            colors: [
+                                              AppColors.primary,
+                                              AppColors.primaryDark
+                                            ],
+                                            begin: Alignment.topLeft,
+                                            end: Alignment.bottomRight,
+                                          )
+                                        : null,
+                                    color: isSelected
+                                        ? null
+                                        : Colors.white.withOpacity(0.08),
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(
+                                      color: isSelected
+                                          ? AppColors.primary
+                                          : Colors.white.withOpacity(0.15),
+                                      width: 1,
+                                    ),
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      '$size',
+                                      style: GoogleFonts.poppins(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 15,
+                                      ),
+                                    ),
+                                  ),
                                 ),
                               );
                             }),
@@ -167,7 +211,7 @@ class _OnboardingHouseholdScreenState extends State<OnboardingHouseholdScreen> {
                           if (_householdSize > 1) ...[
                             Text(
                               l10n.translate('onboarding_household_members_age_title'),
-                              style: TextStyle(
+                              style: GoogleFonts.poppins(
                                 fontSize: 16,
                                 color: Colors.white.withOpacity(0.9),
                                 fontWeight: FontWeight.w500,
@@ -180,31 +224,31 @@ class _OnboardingHouseholdScreenState extends State<OnboardingHouseholdScreen> {
                                 child: TextFormField(
                                   controller: _ageControllers[index],
                                   keyboardType: TextInputType.number,
-                                  style: const TextStyle(color: Colors.white),
+                                  style: GoogleFonts.poppins(color: Colors.white),
                                   decoration: InputDecoration(
                                     labelText: l10n.translateWithArgs(
                                       'onboarding_household_member_age_label',
                                       {'n': '${index + 2}'},
                                     ),
-                                    labelStyle: TextStyle(
-                                      color: Colors.white.withOpacity(0.7),
+                                    labelStyle: GoogleFonts.poppins(
+                                      color: Colors.white60,
                                     ),
                                     filled: true,
-                                    fillColor: Colors.white.withOpacity(0.1),
+                                    fillColor: Colors.white.withOpacity(0.08),
                                     border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(12),
+                                      borderRadius: BorderRadius.circular(16),
                                       borderSide: BorderSide.none,
                                     ),
                                     enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(12),
+                                      borderRadius: BorderRadius.circular(16),
                                       borderSide: BorderSide(
-                                        color: Colors.cyanAccent.withOpacity(0.3),
+                                        color: AppColors.primary.withOpacity(0.3),
                                       ),
                                     ),
                                     focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(12),
+                                      borderRadius: BorderRadius.circular(16),
                                       borderSide: const BorderSide(
-                                        color: Colors.cyanAccent,
+                                        color: AppColors.primary,
                                         width: 2,
                                       ),
                                     ),
@@ -219,28 +263,47 @@ class _OnboardingHouseholdScreenState extends State<OnboardingHouseholdScreen> {
                     ),
                   ),
                 ),
-                SizedBox(
-                  width: double.infinity,
-                  height: 56,
-                  child: ElevatedButton(
-                    onPressed: _submit,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.cyanAccent,
-                      foregroundColor: Colors.black,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    child: Text(
-                      l10n.translate('continue'),
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
+                _buildContinueButton(l10n),
               ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildContinueButton(AppLocalizations l10n) {
+    return Material(
+      color: Colors.transparent,
+      borderRadius: BorderRadius.circular(16),
+      child: InkWell(
+        onTap: _submit,
+        borderRadius: BorderRadius.circular(16),
+        child: Ink(
+          height: 56,
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              colors: [AppColors.primary, AppColors.primaryDark],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.primary.withOpacity(0.35),
+                blurRadius: 16,
+                offset: const Offset(0, 6),
+              ),
+            ],
+          ),
+          child: Center(
+            child: Text(
+              l10n.translate('continue'),
+              style: GoogleFonts.poppins(
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+                color: Colors.white,
+              ),
             ),
           ),
         ),

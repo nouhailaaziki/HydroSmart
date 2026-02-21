@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../theme/app_colors.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 import '../providers/water_provider.dart';
@@ -88,7 +89,7 @@ class _HouseholdSettingsScreenState extends State<HouseholdSettingsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF001529),
+      backgroundColor: AppColors.backgroundDark,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -111,7 +112,7 @@ class _HouseholdSettingsScreenState extends State<HouseholdSettingsScreen> {
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [Color(0xFF0D47A1), Color(0xFF001529)],
+            colors: [AppColors.navyMid, AppColors.backgroundDark],
           ),
         ),
         child: ListView(
@@ -121,17 +122,17 @@ class _HouseholdSettingsScreenState extends State<HouseholdSettingsScreen> {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.cyanAccent.withOpacity(0.1),
+                color: AppColors.primary.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: Colors.cyanAccent.withOpacity(0.3),
+                  color: AppColors.primary.withOpacity(0.3),
                 ),
               ),
               child: Row(
                 children: [
                   const Icon(
                     Icons.family_restroom,
-                    color: Colors.cyanAccent,
+                    color: AppColors.primary,
                     size: 32,
                   ),
                   const SizedBox(width: 16),
@@ -188,8 +189,8 @@ class _HouseholdSettingsScreenState extends State<HouseholdSettingsScreen> {
                 icon: const Icon(Icons.add),
                 label: const Text('Add Member'),
                 style: OutlinedButton.styleFrom(
-                  foregroundColor: Colors.cyanAccent,
-                  side: const BorderSide(color: Colors.cyanAccent),
+                  foregroundColor: AppColors.primary,
+                  side: const BorderSide(color: AppColors.primary),
                   padding: const EdgeInsets.symmetric(vertical: 16),
                 ),
               ),
@@ -217,7 +218,7 @@ class _HouseholdSettingsScreenState extends State<HouseholdSettingsScreen> {
                         children: [
                           const Icon(
                             Icons.analytics_outlined,
-                            color: Colors.cyanAccent,
+                            color: AppColors.primary,
                           ),
                           const SizedBox(width: 12),
                           const Text(
@@ -259,14 +260,14 @@ class _HouseholdSettingsScreenState extends State<HouseholdSettingsScreen> {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.cyanAccent.withOpacity(0.2),
+              color: AppColors.primary.withOpacity(0.2),
               shape: BoxShape.circle,
             ),
             child: Icon(
               member.age <= 12 ? Icons.child_care :
               member.age <= 17 ? Icons.person_outline :
               member.age <= 64 ? Icons.person : Icons.elderly,
-              color: Colors.cyanAccent,
+              color: AppColors.primary,
             ),
           ),
           const SizedBox(width: 16),
